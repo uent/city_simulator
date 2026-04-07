@@ -30,3 +30,9 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+# Generated simulation output
+simulation_output.jsonl
+
+# Claude Code local settings
+.claude/settings.local.json
