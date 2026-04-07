@@ -1,0 +1,55 @@
+locations:
+  - name: Convention Lobby
+    description: >
+      The grand entrance of the HoneyCon convention centre. Four thousand bears
+      mill about under a vaulted ceiling hung with amber chandeliers. Security
+      desk sits left of the main doors; two guards check badges. The smell of
+      honey is already overwhelming.
+
+  - name: Vendor Hall
+    description: >
+      A cavernous hall packed with honey stalls, tasting booths, and exhibition
+      stands. Noise and scent create near-perfect cover for movement. Bears
+      jostle, sample, and argue loudly about terroir. Three service corridors
+      connect it to the back of house.
+
+  - name: Security Office
+    description: >
+      A cramped room behind the main desk. Banks of monitors show camera feeds
+      from every corridor. Two guards rotate through on thirty-minute shifts.
+      The alarm relay panel is mounted on the far wall next to a half-eaten jar
+      of discount honey.
+
+  - name: Vault Antechamber
+    description: >
+      A locked corridor accessible only via a key-card reader outside the
+      Security Office. Smooth concrete walls, no cameras (Dr. Snuffles confirmed
+      this is the one blind spot). A heavy steel door at the far end leads to
+      the vault. It hums faintly.
+
+  - name: Vault
+    description: >
+      The inner sanctum. Climate-controlled at precisely 14°C to preserve the
+      exhibit. The Golden Comb — a crystallized honeycomb the size of a cub —
+      sits on a pressure-sensitive plinth under a glass case. One motion sensor.
+      One Honeydrop.
+
+  - name: Alley (Exit)
+    description: >
+      The narrow service alley behind the convention centre. Dumpsters, a fire
+      exit, and Patches idling in a rented white van with a pawprint air
+      freshener. The fastest route to the ring road is forty seconds north.
+
+initial_events:
+  - description: >
+      The annual HoneyCon convention is at absolute peak attendance — lanyards
+      everywhere, the main keynote just ended, and thousands of bears are
+      spilling out of the auditorium into every corridor. The guards changed
+      shift eleven minutes ago; the new team is still getting settled.
+    event_type: scene_setup
+
+  - description: >
+      Dr. Snuffles reports over comms: "Camera loop on the Vault Antechamber
+      feed is live. Gustav just went on break. Reginald is on his third cup of
+      tea. Commencing Operation Golden Snout."
+    event_type: heist_start

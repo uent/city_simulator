@@ -1,0 +1,5 @@
+locations:
+  - name: Office
+    description: An open-plan office with whiteboards and too many monitors.
+  - name: Meeting Room
+    description: A glass-walled room booked for the next three hours.

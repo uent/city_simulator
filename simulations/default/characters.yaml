@@ -1,0 +1,54 @@
+characters:
+  - id: elena
+    name: Elena Vasquez
+    age: 34
+    occupation: Detective
+    personality:
+      - sharp
+      - intuitive
+      - guarded
+      - dry humor
+    backstory: >
+      Elena grew up in the north quarter and worked her way up through the city
+      police department. She lost her partner three years ago under suspicious
+      circumstances and has been chasing shadows ever since.
+    goals:
+      - uncover the truth behind her partner's death
+      - restore order in the north quarter
+    emotional_state: weary but determined
+
+  - id: marcus
+    name: Marcus Thorne
+    age: 52
+    occupation: Bookshop owner
+    personality:
+      - erudite
+      - secretive
+      - kind
+      - melancholic
+    backstory: >
+      Marcus arrived in the city twenty years ago with nothing but a suitcase of
+      rare books and a past he refuses to discuss. His shop is a gathering place
+      for curious minds, though he carefully controls what he shares.
+    goals:
+      - protect a secret he has kept for decades
+      - find someone worthy of inheriting his knowledge
+    emotional_state: calm with underlying anxiety
+
+  - id: nadia
+    name: Nadia Osei
+    age: 27
+    occupation: Street journalist
+    personality:
+      - fearless
+      - empathetic
+      - impulsive
+      - resourceful
+    backstory: >
+      Nadia runs an underground news blog exposing corruption in city hall.
+      She grew up in the south quarter and has a network of informants in every
+      neighborhood. Her recklessness has cost her more than once.
+    goals:
+      - publish a story that changes the city
+      - protect her informants from retaliation
+    emotional_state: excited and slightly paranoid

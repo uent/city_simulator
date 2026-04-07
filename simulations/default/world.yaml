@@ -1,0 +1,41 @@
+locations:
+  - name: Town Square
+    description: >
+      The bustling center of the city where citizens gather to trade news,
+      argue politics, and watch each other. A large fountain dominates the
+      middle; benches ring the perimeter. Everything of importance passes
+      through here eventually.
+
+  - name: Tavern
+    description: >
+      A dimly lit gathering place for locals. Cheap drinks, loose tongues,
+      and a landlord who hears everything but says nothing. The back room
+      is used for meetings that cannot happen in public.
+
+  - name: Market
+    description: >
+      A noisy stretch of stalls that runs the length of Merchant Row. Vendors
+      hawk everything from bread to stolen watches. The smell of frying food
+      and rotting produce hangs in equal measure.
+
+  - name: North Quarter
+    description: >
+      A residential district of narrow streets and cramped tenements. The
+      police station sits at its heart; everything else radiates outward in
+      varying degrees of decay. Elena knows every shortcut.
+
+  - name: Back Alley
+    description: >
+      A network of narrow lanes used by those who prefer discretion. Graffiti
+      covers every wall. Deals happen here, and sometimes worse things.
+
+initial_events:
+  - description: >
+      A body was found behind the Market before dawn. The victim has not been
+      identified. Word is already spreading through the north quarter.
+    event_type: inciting_incident
+
+  - description: >
+      An anonymous tip arrived at the police station: "Ask Marcus what he
+      saw three years ago."
+    event_type: rumor

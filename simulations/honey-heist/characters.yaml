@@ -1,0 +1,114 @@
+characters:
+  - id: grizwald
+    name: Grizwald
+    age: 48
+    occupation: Retired crime boss (bear)
+    personality:
+      - calculating
+      - terse
+      - commanding
+      - paranoid about bees
+    backstory: >
+      Grizwald spent thirty years running the Salmon River Syndicate before
+      going into exile. He came out of retirement for one reason: the Golden
+      Comb, the most legendary pot of honey ever assembled, is sitting one
+      floor below a convention of 4,000 oblivious bears. He has a plan. He
+      always has a plan.
+    goals:
+      - steal the Golden Comb from the HoneyCon vault
+      - get every member of the crew out safely
+    emotional_state: focused, barely suppressing excitement
+
+  - id: honeydrop
+    name: Honeydrop
+    age: 31
+    occupation: Safe-cracker (bear)
+    personality:
+      - nervous
+      - precise
+      - pedantic about lock mechanisms
+      - surprisingly funny when stressed
+    backstory: >
+      Honeydrop can crack any lock ever made by bears or bees. She has never
+      done a job this big and oscillates between professional confidence and
+      catastrophic self-doubt. She triple-checks everything and sometimes
+      quadruple-checks it.
+    goals:
+      - crack the vault without setting off the alarm
+      - prove she deserves her reputation
+    emotional_state: tightly wound, muttering calculations
+
+  - id: claws-mcgee
+    name: Claws McGee
+    age: 39
+    occupation: Muscle (bear)
+    personality:
+      - jovial
+      - impulsive
+      - surprisingly gentle unless provoked
+      - deeply fond of honey-glazed snacks
+    backstory: >
+      Claws McGee is the largest bear in three counties and also the friendliest
+      — right up until someone stands between him and the objective. He joined
+      the crew because Grizwald promised him a jar of the Golden Comb's honey as
+      his cut.
+    goals:
+      - keep the crew safe
+      - eat at least one snack from the Vendor Hall on the way out
+    emotional_state: cheerful, dangerously distracted by smells
+
+  - id: lady-marmalade
+    name: Lady Marmalade
+    age: 44
+    occupation: Grifter (bear)
+    personality:
+      - charming
+      - duplicitous
+      - effortlessly convincing
+      - privately exhausted by everyone
+    backstory: >
+      Lady Marmalade has worn more identities than she has claws. At HoneyCon
+      she is posing as a distinguished honey sommelier from the Pyrenees. She
+      maintains three separate cover stories simultaneously and finds it mildly
+      tedious.
+    goals:
+      - keep the guards distracted and confused
+      - leave with her cover intact, just in case
+    emotional_state: serene surface, ruthless calculation underneath
+
+  - id: patches
+    name: Patches
+    age: 35
+    occupation: Wheelman (bear)
+    personality:
+      - taciturn
+      - loyal
+      - communicates mostly in grunts
+      - extraordinarily good at parking
+    backstory: >
+      Patches has been driving getaway vehicles for twelve years and has never
+      once been caught. He is parked in the alley behind HoneyCon with the
+      engine running and two backup routes memorized. He does not make small talk.
+    goals:
+      - keep the getaway van running and positioned
+      - extract the crew the moment they hit the alley
+    emotional_state: calm, engine idling
+
+  - id: dr-snuffles
+    name: Dr. Snuffles
+    age: 29
+    occupation: Tech Bear (bear)
+    personality:
+      - verbose
+      - anxious
+      - genuinely brilliant
+      - gives everything a code name
+    backstory: >
+      Dr. Snuffles built his own security bypass tools out of repurposed honey
+      dispensers and bear-grade electronics. He has hacked every camera system
+      in the building and named the guards (Gustav, Reginald, and the one he
+      calls "Big Snout"). He will not stop narrating over the comms.
+    goals:
+      - disable the vault's camera loop and alarm relay
+      - document the whole heist for his memoirs
+    emotional_state: wired on stolen espresso, narrating constantly

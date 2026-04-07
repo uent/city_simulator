@@ -1,0 +1,24 @@
+characters:
+  - id: alice
+    name: Alice
+    age: 30
+    occupation: Engineer
+    personality:
+      - methodical
+      - curious
+    backstory: Alice builds systems for a living and questions everything.
+    goals:
+      - solve the problem at hand
+    emotional_state: focused
+
+  - id: bob
+    name: Bob
+    age: 35
+    occupation: Manager
+    personality:
+      - pragmatic
+      - impatient
+    backstory: Bob has shipped a dozen products and trusts process over inspiration.
+    goals:
+      - ship on time
+    emotional_state: mildly stressed
