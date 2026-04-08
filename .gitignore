@@ -31,6 +31,10 @@ go.work.sum
 # .idea/
 # .vscode/
 
+# Build output
+city-simulator
+city-simulator~
+
 # Generated simulation output
 simulation_output.jsonl
 
