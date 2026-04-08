@@ -89,6 +89,26 @@ func BuildSystemPrompt(c Character) string {
 		sb.WriteString("\n")
 	}
 
+	if ci := c.CoverIdentity; ci != nil {
+		sb.WriteString("Identidad de cobertura:\n")
+		if ci.Alias != "" {
+			sb.WriteString(fmt.Sprintf("- Alias: %s\n", ci.Alias))
+		}
+		if ci.Role != "" {
+			sb.WriteString(fmt.Sprintf("- Rol: %s\n", ci.Role))
+		}
+		if ci.Backstory != "" {
+			sb.WriteString(fmt.Sprintf("- Historia: %s\n", ci.Backstory))
+		}
+		if len(ci.Weaknesses) > 0 {
+			sb.WriteString("- Debilidades de cobertura (comportamientos que podrían exponerte):\n")
+			for _, w := range ci.Weaknesses {
+				sb.WriteString(fmt.Sprintf("  - %s\n", w))
+			}
+		}
+		sb.WriteString("\n")
+	}
+
 	sb.WriteString("Stay in character at all times. Respond as this person would. Keep responses concise.")
 	return sb.String()
 }

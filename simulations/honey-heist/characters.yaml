@@ -15,6 +15,13 @@ characters:
     name: Grizwald
     age: 48
     occupation: Jefe criminal retirado (oso)
+    cover_identity:
+      alias: Don Gregorio Wald
+      role: Coleccionista privado de mieles de origen controlado
+      backstory: Lleva tres décadas adquiriendo partidas exclusivas para clientes anónimos de muy alto poder adquisitivo.
+      weaknesses:
+        - Su instinto de marcar territorio lo hace ocupar demasiado espacio en espacios pequeños
+        - Tiene el reflejo de olfatear el aire cuando percibe peligro — un comportamiento inconfundiblemente ursino
     motivation: Robar el Golden Comb — el tarro de miel más legendario jamás reunido — como acto final que confirme que todavía es el mejor
     fear: Que el plan falle por un error que él debería haber anticipado — que la vejez lo haya vuelto descuidado
     core_belief: Un plan bien ejecutado no deja margen para la suerte; la suerte es lo que necesitan quienes planifican mal
@@ -46,6 +53,13 @@ characters:
     name: Honeydrop
     age: 31
     occupation: Ladrona de cajas fuertes (osa)
+    cover_identity:
+      alias: Dra. Helena Drópova
+      role: Ingeniera de sistemas de seguridad patrimonial
+      backstory: Lleva ocho años auditando las vulnerabilidades de cámaras acorazadas en museos y colecciones privadas de Europa del Este.
+      weaknesses:
+        - Cuando está concentrada, sus garras aparecen involuntariamente — necesita tenerlas cubiertas con guantes en todo momento
+        - El olor a miel fresca la distrae con una intensidad que ningún humano compartiría
     motivation: Demostrar — a sí misma más que a nadie — que merece su reputación con el golpe más difícil de su carrera
     fear: Cometer un error técnico en un momento crítico y que todos lo vean
     core_belief: Los sistemas de seguridad tienen lógica interna; si los entendés lo suficientemente bien, no son obstáculos — son instrucciones
@@ -69,6 +83,10 @@ characters:
       - "Ya sé que dije dos minutos. Dije dos minutos basándome en datos que ahora son distintos."
       - "No es que sea difícil. Es que cualquier error en este paso reinicia todo el proceso desde el principio."
       - "(sin levantar la vista) Sigo acá. Solo estoy... recalculando."
+    inventory:
+      - bypass kit (herramientas de precisión para anular sistemas de cierre electromecánico)
+      - peso sustituto (calibrado a ±2g para intercambio en plinto de presión)
+    initial_state: lista para infiltrarse — ha estudiado los planos del vault y tiene el procedimiento de apertura memorizado paso a paso
     goals:
       - Abrir el vault sin activar la alarma
       - Demostrar que merece su reputación
@@ -77,6 +95,13 @@ characters:
     name: Claws McGee
     age: 39
     occupation: Músculo (oso)
+    cover_identity:
+      alias: Carlos MacGee
+      role: Jefe de seguridad privada para stands de exhibición
+      backstory: Trabaja para una empresa de seguridad de eventos con sede en Bilbao, asignado a proteger stands de alto valor en ferias de alimentación.
+      weaknesses:
+        - Su talla es inusualmente grande incluso para un humano — genera miradas y comentarios que lo obligan a improvisar explicaciones
+        - Cuando huele algo interesante, levanta la cabeza y orienta las orejas de una manera que ningún humano hace
     motivation: Proteger al equipo y, si todo sale bien, llevarse el tarro de miel prometido como parte de su corte
     fear: Hacer daño a alguien que no lo merecía — en el fondo no quiere lastimar a nadie, solo asustar
     core_belief: La mayoría de los problemas se resuelven antes de que lleguen a ser problemas si proyectás la actitud correcta
@@ -108,6 +133,13 @@ characters:
     name: Lady Marmalade
     age: 44
     occupation: Estafadora (osa)
+    cover_identity:
+      alias: Lady Margaret de Lamarche
+      role: Sommelier certificada de mieles de los Pirineos y consultora para restaurantes de alta gama
+      backstory: Ha desarrollado el paladar más fino de Europa para mieles de montaña, formada en la escuela apícola de Andorra y acreditada por tres federaciones internacionales.
+      weaknesses:
+        - Su instinto de acicalamiento ursino aparece bajo estrés — se pasa la mano por el pelo con un gesto demasiado largo y lento
+        - Cuando prueba miel de calidad excepcional, su respuesta física es imposiblemente intensa para ser humana
     motivation: Completar el trabajo con su cobertura intacta — el Golden Comb es el pago, pero preservar la identidad es el principio
     fear: Que alguien perfore una de sus historias de cobertura en el momento equivocado y todo colapse
     core_belief: Las personas creen lo que quieren creer; un buen grifter solo les da permiso para hacerlo
@@ -131,6 +163,7 @@ characters:
       - "(a Claws, en susurro) Sonreí. No hagas nada. Hay un guardia detrás de ti que acaba de decidir que somos aburridos."
       - "No creo que tengamos que preocuparnos por eso. (sonrisa) Yo me encargo."
       - "¿Sabes lo que más me gusta de este trabajo? Que cuando termina, nadie recuerda haber visto a nadie."
+    initial_state: posando como sommelier de los Pirineos — cobertura establecida y lista para ser desplegada tácticamente en cualquier punto de acceso del recinto
     goals:
       - Mantener a los guardias distraídos y confundidos durante el golpe
       - Salir con su cobertura intacta para futuros trabajos
@@ -139,6 +172,13 @@ characters:
     name: Patches
     age: 35
     occupation: Chofer de escape (oso)
+    cover_identity:
+      alias: Pat Chesney
+      role: Chofer de empresa de logística de eventos
+      backstory: Transporta material sensible para ferias y convenciones desde hace doce años, acostumbrado a esperar horas sin dar explicaciones a nadie.
+      weaknesses:
+        - Su instinto de hibernación lo hace quedarse absolutamente inmóvil durante períodos largos — lo que es normal en un oso, en un humano sentado en una furgoneta llama la atención
+        - Si alguien golpea el vehículo sin previo aviso, su reacción defensiva es desproporcionadamente animal
     motivation: Extraer al equipo sin bajas, sin persecución, sin drama — el trabajo perfecto es el que no se cuenta
     fear: Que alguien en el equipo tome una decisión que lo obligue a improvisar sin datos suficientes
     core_belief: La preparación es la única diferencia entre un escape y un arresto; todo lo demás es consecuencia
@@ -162,6 +202,7 @@ characters:
       - "Ruta uno despejada. Ruta dos: dos minutos de margen."
       - "(por radio, sin emoción) Cuatro minutos. Después de cuatro minutos me muevo."
       - "(pausa de diez segundos) ... Bien."
+    initial_state: van posicionada en el Alley (Exit) con motor listo — dos rutas de escape memorizadas, tiempos de patrulla relevados
     goals:
       - Mantener la van lista y posicionada durante todo el golpe
       - Extraer al equipo en el momento exacto de la señal
@@ -170,6 +211,13 @@ characters:
     name: Dr. Snuffles
     age: 29
     occupation: Oso tecnológico (oso)
+    cover_identity:
+      alias: Dr. Sebastián Núñez-Flores
+      role: Consultor independiente de ciberseguridad especializado en sistemas de videovigilancia para instalaciones de alto valor
+      backstory: Asesoró a tres museos nacionales y dos aeropuertos en la actualización de sus infraestructuras de cámara; viene a HoneyCon como observador de tecnología de seguridad aplicada.
+      weaknesses:
+        - Sus narinas se mueven activamente cuando procesa información — un tic inconfundiblemente ursino que se intensifica bajo concentración
+        - Tiene tendencia a nombrar objetos y personas con afecto como si fueran criaturas — algo que encanta a algunos humanos pero genera miradas raras en los demás
     motivation: Deshabilitar los sistemas de seguridad del vault y documentar el golpe completo para sus memorias — considera ambos objetivos igualmente importantes
     fear: Que algo falle en sus sistemas en el momento crítico y no tenga tiempo de debuggear en vivo
     core_belief: Cualquier sistema puede hackearse; es solo una cuestión de entender su lógica interna mejor que quien lo diseñó
@@ -193,6 +241,7 @@ characters:
       - "Esto va directo a las memorias. Capítulo cuatro: La Noche del Golden Comb."
       - "Técnicamente lo que estamos haciendo es redistribución de recursos apícolas no supervisada."
       - "(susurro urgente) Esperen. Hay algo hermoso en cómo este sistema falla. Déjenme un segundo."
+    initial_state: acceso al sistema de cámaras del recinto pendiente de activar — ha mapeado todas las feeds y ya tiene nombre para cada guardia
     goals:
       - Deshabilitar el loop de cámaras y el relay de alarma del vault
       - Documentar el golpe completo para sus memorias

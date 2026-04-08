@@ -4,7 +4,7 @@
 
 ### Requirement: Psychological core fields on Character
 
-The `Character` struct SHALL expose four string fields that form its psychological core: `Motivation` (what the character wants and why), `Fear` (what they avoid at all costs), `CoreBelief` (their foundational view of how the world works), and `InternalTension` (a single contradiction that defines their complexity). The YAML keys SHALL be `motivation`, `fear`, `core_belief`, and `internal_tension`.
+The `Character` struct SHALL expose four string fields that form its psychological core: `Motivation` (what the character wants and why), `Fear` (what they avoid at all costs), `CoreBelief` (their foundational view of how the world works), and `InternalTension` (a single contradiction that defines their complexity). The YAML keys SHALL be `motivation`, `fear`, `core_belief`, and `internal_tension`. The struct SHALL also expose a `CoverIdentity *CoverIdentity` field (YAML key `cover_identity`) as specified in the character-cover-identity capability; a nil pointer means the character has no cover identity.
 
 #### Scenario: All core fields parsed from YAML
 - **WHEN** a `characters.yaml` entry includes `motivation`, `fear`, `core_belief`, and `internal_tension` keys
@@ -13,6 +13,14 @@ The `Character` struct SHALL expose four string fields that form its psychologic
 #### Scenario: Missing psychological core fields default to empty string
 - **WHEN** a `characters.yaml` entry omits one or more of `motivation`, `fear`, `core_belief`, `internal_tension`
 - **THEN** `LoadCharacters` SHALL still succeed, leaving the missing fields as empty strings
+
+#### Scenario: CoverIdentity nil when cover_identity omitted
+- **WHEN** a `characters.yaml` entry omits the `cover_identity` key
+- **THEN** `Character.CoverIdentity` SHALL be nil after loading and no error returned
+
+#### Scenario: CoverIdentity populated when cover_identity present
+- **WHEN** a `characters.yaml` entry contains a `cover_identity:` block with at minimum an `alias` field
+- **THEN** `Character.CoverIdentity` SHALL be non-nil after loading
 
 ---
 
@@ -69,6 +77,28 @@ The `Character` struct SHALL expose `DialogueExamples []string` (YAML key `dialo
 #### Scenario: Dialogue examples absent defaults to nil slice
 - **WHEN** `characters.yaml` omits `dialogue_examples`
 - **THEN** `Character.DialogueExamples` SHALL be nil (or empty slice) and no error returned
+
+---
+
+### Requirement: Inventory and initial state fields on Character
+
+The `Character` struct SHALL expose `Inventory []string` (YAML key `inventory`) — an ordered list of objects the character carries at the start of the simulation — and `InitialState string` (YAML key `initial_state`) — a short description of the character's tactical or narrative state at simulation start. Both fields are optional; omitting them SHALL leave `Inventory` as nil and `InitialState` as an empty string.
+
+#### Scenario: Inventory parsed from YAML list
+- **WHEN** a `characters.yaml` entry contains an `inventory` list with two items
+- **THEN** `Character.Inventory` SHALL have length 2 with entries in YAML order and no error returned
+
+#### Scenario: Inventory absent defaults to nil
+- **WHEN** a `characters.yaml` entry omits the `inventory` key
+- **THEN** `Character.Inventory` SHALL be nil and loading SHALL return no error
+
+#### Scenario: InitialState parsed from YAML string
+- **WHEN** a `characters.yaml` entry contains `initial_state: "ready to infiltrate"`
+- **THEN** `Character.InitialState` SHALL equal `"ready to infiltrate"` after loading
+
+#### Scenario: InitialState absent defaults to empty string
+- **WHEN** a `characters.yaml` entry omits the `initial_state` key
+- **THEN** `Character.InitialState` SHALL be an empty string and loading SHALL return no error
 
 ---
 

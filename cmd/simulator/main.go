@@ -73,17 +73,19 @@ func main() {
 	explicitFlags := make(map[string]bool)
 	flag.Visit(func(f *flag.Flag) { explicitFlags[f.Name] = true })
 
+	// Priority: CLI flags > env vars > scenario.yaml overrides > hardcoded defaults.
+	// Both CLI flags and env vars beat scenario.yaml, so both are captured in CLIFlags.
 	cliFlags := scenario.CLIFlags{}
-	if explicitFlags["model"] {
+	if explicitFlags["model"] || os.Getenv("OLLAMA_MODEL") != "" {
 		cliFlags.Model = model
 	}
-	if explicitFlags["turns"] {
+	if explicitFlags["turns"] || os.Getenv("SIM_TURNS") != "" {
 		cliFlags.Turns = turns
 	}
-	if explicitFlags["seed"] {
+	if explicitFlags["seed"] || os.Getenv("SIM_SEED") != "" {
 		cliFlags.Seed = seed
 	}
-	if explicitFlags["output"] {
+	if explicitFlags["output"] || os.Getenv("SIM_OUTPUT") != "" {
 		cliFlags.Output = output
 	}
 
@@ -93,12 +95,12 @@ func main() {
 		log.Fatalf("load scenario: %v", err)
 	}
 
-	// Merge config: CLI flags > scenario.yaml overrides > compiled defaults.
+	// Merge config: CLI flags / env vars > scenario.yaml overrides > hardcoded defaults.
 	defaults := scenario.SimConfig{
-		Model:  *model,
-		Turns:  *turns,
-		Seed:   *seed,
-		Output: *output,
+		Model:  "llama3",
+		Turns:  10,
+		Seed:   0,
+		Output: "simulation_output.jsonl",
 	}
 	simCfg := scenario.MergeConfig(sc.Overrides, cliFlags, defaults)
 

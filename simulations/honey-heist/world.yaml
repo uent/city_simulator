@@ -1,5 +1,21 @@
+concept:
+  premise: >
+    Este es un mundo de humanos. Los personajes son osos que se hacen pasar por
+    humanos para robar la Golden Comb en HoneyCon. Ningún humano sabe que son osos.
+    Si alguien lo descubre, el operativo termina.
+  flavor: comedia de robo absurdista con tensión real
+  rules:
+    - Caminar siempre en dos patas, nunca en cuatro
+    - No oler visiblemente la miel — los humanos no reaccionan así ante el aroma
+    - Usar las manos como humanos, no las garras
+    - No gruñir, rugir ni emitir sonidos no humanos bajo ninguna circunstancia
+    - Si alguien pregunta por tu cobertura, responde sin titubear — los humanos no sudan ante preguntas normales
+    - El contacto físico accidental que revele pelaje debe explicarse como "ropa inusual"
+
 weather: clear indoors — the convention centre is climate-controlled
 atmosphere: electric anticipation
+
+initial_location: Convention Lobby
 
 locations:
   - name: Convention Lobby
@@ -9,10 +25,8 @@ locations:
       check badges.
     details: >
       The two badge-checkers rotate every twenty minutes. The taller one,
-      Gustav, is distracted — keeps checking his phone. Lady Marmalade is
-      currently engaging both guards in conversation about Pyrenean honey
-      varietals, buying a three-minute window. The fire door to the right
-      of the security desk is propped open with a wedge — someone's been
+      Gustav, is distracted — keeps checking his phone. The fire door to the
+      right of the security desk is propped open with a wedge — someone's been
       going in and out without badging. The crowd noise makes radio comms
       unreliable from this position.
 
@@ -26,21 +40,16 @@ locations:
       The left corridor dead-ends at a storage room full of empty exhibition
       crates. A honey sommelier is mid-argument with a vendor about barrel
       aging; the crowd around them creates a useful visual obstruction from
-      camera position C-7. Claws McGee should be able to move through the
-      left side without being seen from the security desk monitors.
+      camera position C-7.
 
   - name: Security Office
     description: >
       A cramped room behind the main desk with monitors showing every corridor.
       Two guards rotate on thirty-minute shifts.
     details: >
-      Dr. Snuffles has eyes on this room. Reginald just poured his third cup
-      of tea and is reviewing yesterday's shift report — maximum distraction
-      window. The alarm relay panel is on the far wall, physically accessible
-      from inside the room only. Feed C-9 (Vault Antechamber) shows the
-      looped footage Dr. Snuffles installed — fourteen-second blank replaced
-      with a static image from 40 minutes ago. If anyone looks closely at
-      the timestamp, the loop will be obvious.
+      The alarm relay panel is on the far wall, physically accessible from
+      inside the room only. Feed C-9 covers the Vault Antechamber. The
+      guard shift log is reviewed at the start of each rotation.
 
   - name: Vault Antechamber
     description: >
@@ -49,11 +58,9 @@ locations:
     details: >
       The key-card reader has a 4-second delay between swipes — rushing it
       triggers a lockout. The concrete walls are thick enough that radio
-      comms cut out completely inside; any signal from Dr. Snuffles stops here.
-      The vault door hums on a continuous frequency — if that hum changes
-      pitch, the pressure sensor inside has been triggered. Honeydrop has
-      been here for six minutes. The bypass kit she needs is on her left side,
-      third pocket.
+      comms cut out completely inside. The vault door hums on a continuous
+      frequency — if that hum changes pitch, the pressure sensor inside has
+      been triggered.
 
   - name: Vault
     description: >
@@ -62,51 +69,39 @@ locations:
     details: >
       One motion sensor, top-right corner, 120-degree arc. The dead zone is
       a 30cm strip along the left wall — move along it and the sensor won't
-      trigger. The plinth registers any weight differential greater than 50g;
-      the substitution weight Honeydrop carries is calibrated to 2g tolerance.
-      The Golden Comb smells like nothing Honeydrop has ever encountered —
-      crystallized flowers and summer and something older. She has four minutes
-      before the ambient temperature differential triggers a passive alarm.
+      trigger. The plinth registers any weight differential greater than 50g.
+      Four minutes of exposure to ambient temperature differential triggers
+      a passive alarm.
 
   - name: Alley (Exit)
     description: >
-      The narrow service alley behind the convention centre. Patches idles
-      in a white van. The ring road is forty seconds north.
+      The narrow service alley behind the convention centre. The ring road
+      is forty seconds north.
     details: >
-      Patches has been here for four hours. Both backup routes are memorized:
-      north to the ring road (forty seconds, clear), east through the depot
-      district (ninety seconds, two lights). The van engine is warm. There
-      is a patrol car that does a loop past the alley mouth every eighteen
-      minutes — last pass was eleven minutes ago. Seven minutes until the
-      next one. Patches knows this. He has not mentioned it over comms because
-      it is not yet relevant.
+      Two exit routes available: north to the ring road (forty seconds, clear),
+      east through the depot district (ninety seconds, two lights). A patrol
+      car does a loop past the alley mouth every eighteen minutes.
 
 initial_events:
   - description: >
-      The annual HoneyCon convention is at absolute peak attendance — lanyards
-      everywhere, the main keynote just ended, and thousands of bears are
-      spilling out of the auditorium into every corridor. The guards changed
-      shift eleven minutes ago; the new team is still getting settled.
+      HoneyCon opening day. Thousands of attendees are streaming through the
+      main entrance — lanyards, tote bags, and the smell of honey everywhere.
+      The convention floor is just opening; the new guard shift is getting
+      settled at the security desk.
     event_type: scene_setup
     visibility: public
 
   - description: >
-      Dr. Snuffles reports over comms: "Camera loop on the Vault Antechamber
-      feed is live. Gustav just went on break. Reginald is on his third cup of
-      tea. Commencing Operation Golden Snout."
-    event_type: heist_start
+      The Golden Comb has been confirmed on display. Convention organisers
+      announced it as the centrepiece exhibit — a crystallized honeycomb
+      the size of a cub, on loan from a private collector, secured in the
+      Vault for the duration of the event.
+    event_type: scene_setup
     visibility: public
 
   - description: >
-      A patrol car was spotted doing a loop past the Alley exit. Patches
-      logged it — next pass in approximately eighteen minutes.
-    event_type: threat_log
-    visibility: local
-    location: Alley (Exit)
-
-  - description: >
-      The Vault Antechamber key-card reader timeout was confirmed. Rushing
-      the swipe triggers a four-second lockout. Honeydrop noted it on entry.
-    event_type: intel
-    visibility: local
-    location: Vault Antechamber
+      Security rotation begins. Two guards take their positions at the
+      Convention Lobby desk; a third is assigned to rounds through the
+      Vendor Hall every forty minutes.
+    event_type: scene_setup
+    visibility: public

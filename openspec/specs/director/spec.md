@@ -1,5 +1,26 @@
 ## Requirements
 
+### Requirement: Game Director YAML configuration
+The system SHALL support defining a Game Director in a scenario's `characters.yaml` by setting `type: game_director` on any character entry.
+
+A Game Director entry MUST have an `id` and `name`. All other fields (motivation, fear, etc.) are optional but MAY be used to flavor the director's behavior prompt.
+
+At most one Game Director per scenario is supported; if multiple `type: game_director` entries exist, the first is used and a warning is logged.
+
+#### Scenario: Game Director loaded from YAML
+- **WHEN** `characters.yaml` contains one entry with `type: game_director`
+- **THEN** `scenario.Load` SHALL populate `Scenario.GameDirector` with that entry and exclude it from `Scenario.Characters`
+
+#### Scenario: No Game Director in YAML
+- **WHEN** `characters.yaml` contains no entry with `type: game_director`
+- **THEN** `Scenario.GameDirector` SHALL be nil and all entries are treated as regular characters
+
+#### Scenario: Multiple Game Director entries
+- **WHEN** `characters.yaml` contains two entries with `type: game_director`
+- **THEN** `Scenario.GameDirector` SHALL be set to the first one, a warning SHALL be logged, and the second SHALL be discarded
+
+---
+
 ### Requirement: Director action interface
 The system SHALL define an `Action` interface in `internal/director/action.go` with three methods: `Name() string`, `Execute(args map[string]any, state *world.State, chars *[]*character.Character) error`, and `Summary(args map[string]any) string`. Every named director action SHALL implement this interface.
 

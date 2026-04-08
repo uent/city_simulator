@@ -2,8 +2,28 @@
 
 ## Requirements
 
+### Requirement: Configuration priority order
+The binary SHALL apply configuration values in the following priority order (highest to lowest):
+
+1. **CLI flags** — explicitly passed at invocation time
+2. **Environment variables** — set in the shell or loaded from `.env`
+3. **scenario.yaml overrides** — per-scenario defaults in the loaded scenario
+4. **Hardcoded defaults** — compiled-in fallback values
+
+#### Scenario: Env var beats scenario.yaml
+- **WHEN** `SIM_TURNS=20` is set and the loaded `scenario.yaml` defines `turns: 5`
+- **THEN** the binary SHALL use `20`
+
+#### Scenario: CLI flag beats env var
+- **WHEN** `SIM_TURNS=20` is set and `--turns=15` is also passed
+- **THEN** the binary SHALL use `15`
+
+#### Scenario: scenario.yaml beats hardcoded default
+- **WHEN** no env var or CLI flag for `turns` is set and `scenario.yaml` defines `turns: 5`
+- **THEN** the binary SHALL use `5`
+
 ### Requirement: Environment variable fallback for CLI flags
-The binary SHALL read environment variables as default values for CLI flags. CLI flags SHALL take precedence over environment variables. The following variables SHALL be supported:
+The binary SHALL read environment variables as default values for CLI flags. The following variables SHALL be supported:
 
 | Variable | Flag | Type | Default |
 |---|---|---|---|
@@ -12,7 +32,7 @@ The binary SHALL read environment variables as default values for CLI flags. CLI
 | `SIM_TURNS` | `--turns` | int | `10` |
 | `SIM_SEED` | `--seed` | int64 | `0` |
 | `SIM_OUTPUT` | `--output` | string | `simulation_output.jsonl` |
-| `SIM_CHARACTERS` | `--characters` | string | `configs/characters.yaml` |
+| `SIM_SCENARIO` | `--scenario` | string | `default` |
 
 #### Scenario: Env var sets default when flag not provided
 - **WHEN** `OLLAMA_MODEL=mistral` is set in the environment and `--model` is not passed

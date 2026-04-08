@@ -24,6 +24,15 @@ type RelationalProfile struct {
 	Vulnerable string `yaml:"vulnerable"`
 }
 
+// CoverIdentity describes how a character presents themselves within this world.
+// Nil means the character has no cover — they are who they appear to be.
+type CoverIdentity struct {
+	Alias     string   `yaml:"alias"`     // name used in this world
+	Role      string   `yaml:"role"`      // claimed occupation or social position
+	Backstory string   `yaml:"backstory"` // one sentence of invented personal history
+	Weaknesses []string `yaml:"weaknesses"` // behaviours/topics that could expose their true nature
+}
+
 // Character represents an autonomous agent in the simulation.
 type Character struct {
 	ID         string `yaml:"id"`
@@ -47,6 +56,9 @@ type Character struct {
 
 	// Concrete dialogue anchors (3-4 representative lines)
 	DialogueExamples []string `yaml:"dialogue_examples"`
+
+	// Cover identity — nil if character has no cover in this scenario
+	CoverIdentity *CoverIdentity `yaml:"cover_identity"`
 
 	// Runtime state
 	Location       string   `yaml:"location"`       // current location name, matches world.Location.Name
