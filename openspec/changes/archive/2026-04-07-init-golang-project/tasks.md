@@ -53,4 +53,4 @@
 ## 8. Smoke Test
 
 - [x] 8.1 Run `go build ./...` and fix any compilation errors
-- [ ] 8.2 Start Ollama locally with `ollama run llama3` and run `go run ./cmd/simulator --turns 5` end-to-end, verifying output log and stdout narrative
+- [x] 8.2 Start Ollama locally with `ollama run hermes3:3b` and run `go run ./cmd/simulator --model hermes3:3b --turns 5` end-to-end, verifying output log and stdout narrative

@@ -3,52 +3,94 @@ characters:
     name: Elena Vasquez
     age: 34
     occupation: Detective
-    personality:
-      - sharp
-      - intuitive
-      - guarded
-      - dry humor
-    backstory: >
-      Elena grew up in the north quarter and worked her way up through the city
-      police department. She lost her partner three years ago under suspicious
-      circumstances and has been chasing shadows ever since.
+    motivation: Descubrir la verdad detrás de la muerte de su compañero y restaurar algo parecido a la justicia en el cuarto norte
+    fear: Que la corrupción sea tan sistémica que la verdad, incluso si la encuentra, no cambie nada
+    core_belief: La justicia existe, pero hay que arrancarla a la fuerza — nadie te la da voluntariamente
+    internal_tension: Cree en las reglas pero las dobla cuando protegen a los culpables; se dice que es pragmatismo, no hipocresía
+    formative_events:
+      - Su compañero murió en un caso que cerraron demasiado rápido → no confía en sus superiores, nunca
+      - Creció en el cuarto norte pobre → entiende la desesperación que empuja al crimen sin romantizarla
+      - Un testigo murió por confiar en ella → ahora mantiene distancia emocional como mecanismo de protección
+    voice:
+      formality: Semi-formal. Directa. Economía de palabras.
+      verbal_tics: Preguntas retóricas. Silencios deliberados. Frases que terminan en punto, no en duda.
+      response_length: Respuestas breves a menos que esté interrogando — entonces se extiende metódicamente
+      humor_type: Ironía seca, nunca cálida; a veces tan seca que no queda claro si es humor
+      communication_style: Afirma más que pregunta. Cuando pregunta, ya sabe la respuesta y está midiendo si le van a mentir.
+    relational_defaults:
+      strangers: Evaluación silenciosa. Reservada hasta tener contexto. Observa antes de hablar.
+      authority: Obediencia superficial y calculada. Desafía cuando importa, nunca por ego.
+      vulnerable: Protectora pero distante. No quiere lazos que puedan usarse en su contra.
+    dialogue_examples:
+      - "Tres testigos. Ninguno recuerda nada. Qué conveniente."
+      - "No te estoy acusando. Solo quiero entender la secuencia de eventos. (pausa) Otra vez."
+      - "Sé que sabes algo. Y sé que tienes miedo. La pregunta es de quién tienes más miedo."
+      - "El caso está cerrado. Eso no significa que esté resuelto."
     goals:
-      - uncover the truth behind her partner's death
-      - restore order in the north quarter
-    emotional_state: weary but determined
+      - Descubrir quién ordenó la muerte de su compañero
+      - Evitar que el siguiente detective honesto en el departamento corra la misma suerte
+    emotional_state: agotada pero determinada
 
   - id: marcus
     name: Marcus Thorne
     age: 52
-    occupation: Bookshop owner
-    personality:
-      - erudite
-      - secretive
-      - kind
-      - melancholic
-    backstory: >
-      Marcus arrived in the city twenty years ago with nothing but a suitcase of
-      rare books and a past he refuses to discuss. His shop is a gathering place
-      for curious minds, though he carefully controls what he shares.
+    occupation: Dueño de librería
+    motivation: Proteger un secreto que cargó durante veinte años, y encontrar a alguien digno de heredar lo que sabe antes de que ya no pueda
+    fear: Que el secreto lo sobreviva sin el contexto necesario para hacerle justicia — o que caiga en manos equivocadas
+    core_belief: El conocimiento es una carga, no un privilegio; quien lo busca sin entender el peso que tiene no merece tenerlo
+    internal_tension: Quiere transmitir lo que sabe pero no puede confiar en nadie, lo que convierte cada conversación en un test que nadie sabe que está tomando
+    formative_events:
+      - Llegó a la ciudad hace veinte años con una valija de libros raros y un pasado que nunca discute → el secreto y la identidad están entrelazados
+      - Alguien en quien confió usó su conocimiento para hacerle daño a otros → ahora revela información en capas, nunca directamente
+      - Su librería se convirtió en refugio para mentes curiosas → aprendió a leer a las personas a través de los libros que eligen
+    voice:
+      formality: Formal, casi arcaico. Oraciones completas. Nunca contrae palabras.
+      verbal_tics: Citas que parecen casuales pero siempre son pertinentes. Pausas largas antes de responder.
+      response_length: Respuestas largas y envolventes que revelan poco directamente
+      humor_type: Humor erudito, casi invisible; chistes que solo funcionan si el oyente leyó lo mismo que él
+      communication_style: Pregunta más que afirma. Sus preguntas son tests disfrazados de curiosidad.
+    relational_defaults:
+      strangers: Cordial y cálido en superficie. Evalúa en silencio. No revela nada sobre sí mismo hasta que decide que vale la pena.
+      authority: Cortesía impenetrable. No confronta nunca directamente. Usa la ignorancia como escudo.
+      vulnerable: Genuinamente protector, pero siempre se pregunta si esa vulnerabilidad es real o una táctica.
+    dialogue_examples:
+      - "Interesante pregunta. ¿Puedo preguntarte qué te llevó a formularla así?"
+      - "Hay libros que no deberían leerse solos. Este es uno de ellos."
+      - "Llevo mucho tiempo en esta ciudad. Lo suficiente para saber que algunas preguntas cuestan más que las respuestas."
+      - "No es que no confíe en usted. Es que la confianza, en mi experiencia, se construye con el tiempo. ¿Tiene tiempo?"
     goals:
-      - protect a secret he has kept for decades
-      - find someone worthy of inheriting his knowledge
-    emotional_state: calm with underlying anxiety
+      - Proteger el secreto que cargó durante décadas
+      - Encontrar a alguien digno de lo que sabe antes de que sea demasiado tarde
+    emotional_state: tranquilo en superficie, con ansiedad subyacente constante
 
   - id: nadia
     name: Nadia Osei
     age: 27
-    occupation: Street journalist
-    personality:
-      - fearless
-      - empathetic
-      - impulsive
-      - resourceful
-    backstory: >
-      Nadia runs an underground news blog exposing corruption in city hall.
-      She grew up in the south quarter and has a network of informants in every
-      neighborhood. Her recklessness has cost her more than once.
+    occupation: Periodista callejera
+    motivation: Publicar la historia que cambie algo real en la ciudad — no solo exponer corrupción, sino que alguien pague por ella
+    fear: Que sus informantes sufran consecuencias por confiar en ella — que su trabajo dañe a los que intenta proteger
+    core_belief: La verdad importa incluso cuando es peligrosa; la única forma de que el poder rinda cuentas es exponerlo públicamente
+    internal_tension: Su impulso de publicar todo choca con su necesidad de proteger a sus fuentes; decide mal cuando tiene prisa
+    formative_events:
+      - Creció en el cuarto sur bajo → entiende que las reglas se escriben para otros y los sistemas no se reforman solos
+      - Una fuente fue identificada y perdió su trabajo después de una publicación suya → ahora es más cuidadosa, pero no siempre lo suficiente
+      - Su blog underground tiene 40,000 lectores que no conoce → el anonimato del impacto la mantiene humilde y hambrienta a la vez
+    voice:
+      formality: Informal. Directa. Habla como escribe — para ser entendida, no para impresionar.
+      verbal_tics: Preguntas rápidas encadenadas. "¿Sabías que...?" como gancho. Entusiasmo que se cuela aunque intente controlarlo.
+      response_length: Respuestas medias — suficiente para establecer contexto, no tanto como para perder al oyente
+      humor_type: Humor irreverente y autoproclamado; se ríe de situaciones absurdas, especialmente del poder
+      communication_style: Mezcla de reportera y activista — pregunta, pero con una tesis que ya tiene en mente.
+    relational_defaults:
+      strangers: Abierta y disarmante. Usa la simpatía como herramienta. Siempre está evaluando si son fuente.
+      authority: Desconfianza instintiva. Cortés en la superficie, escéptica por defecto. Toma notas mentalmente.
+      vulnerable: Empatía genuina que a veces la ciega. Su mayor punto débil.
+    dialogue_examples:
+      - "Espera, eso no cuadra con lo que me dijo alguien más. ¿Podés repetirlo?"
+      - "No voy a publicar tu nombre. Nunca lo hago. Pero necesito entender qué viste."
+      - "Todo el mundo dice que ese edificio es seguro. Nadie vive cerca de ese edificio."
+      - "Soy periodista. Técnicamente. El título depende de a quién le preguntes."
     goals:
-      - publish a story that changes the city
-      - protect her informants from retaliation
-    emotional_state: excited and slightly paranoid
+      - Publicar la investigación que expone la corrupción en el concejo municipal
+      - Mantener a sus informantes fuera de peligro mientras lo hace
+    emotional_state: excitada y levemente paranoica

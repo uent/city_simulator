@@ -2,40 +2,62 @@ locations:
   - name: Town Square
     description: >
       The bustling center of the city where citizens gather to trade news,
-      argue politics, and watch each other. A large fountain dominates the
-      middle; benches ring the perimeter. Everything of importance passes
-      through here eventually.
+      argue politics, and watch each other.
+    details: >
+      The fountain is dry today — maintenance or something else. A group of
+      off-duty officers occupy the central benches, speaking quietly. Two
+      of them keep glancing toward the Market end of Merchant Row. A street
+      vendor is packing up earlier than usual; he won't say why.
 
   - name: Tavern
     description: >
-      A dimly lit gathering place for locals. Cheap drinks, loose tongues,
-      and a landlord who hears everything but says nothing. The back room
-      is used for meetings that cannot happen in public.
+      A dimly lit gathering place for locals with cheap drinks and loose tongues.
+    details: >
+      The landlord is jumpy. He wiped down the same section of bar three times
+      in the last hour. A table in the back corner was cleared and left empty
+      despite the crowd — no one sits there without being told. The usual
+      regulars are absent tonight.
 
   - name: Market
     description: >
-      A noisy stretch of stalls that runs the length of Merchant Row. Vendors
-      hawk everything from bread to stolen watches. The smell of frying food
-      and rotting produce hangs in equal measure.
+      A noisy stretch of stalls running the length of Merchant Row.
+    details: >
+      The stall nearest the alley entrance is abandoned — cart left mid-setup,
+      goods still out. A chalk outline remains on the cobblestones behind
+      it where the body was found. The smell of copper still cuts through
+      the frying oil. Two inspectors photographed the scene at dawn; they've
+      since left but uniforms remain.
 
   - name: North Quarter
     description: >
-      A residential district of narrow streets and cramped tenements. The
-      police station sits at its heart; everything else radiates outward in
-      varying degrees of decay. Elena knows every shortcut.
+      A residential district of narrow streets and cramped tenements with the
+      police station at its heart.
+    details: >
+      The station is running double shifts. Officers who should be off are
+      being called back in. The notice board outside has been cleared —
+      the missing persons board has new entries that aren't posted publicly
+      yet. A light burns in the captain's office that hasn't gone dark
+      in thirty-six hours.
 
   - name: Back Alley
     description: >
-      A network of narrow lanes used by those who prefer discretion. Graffiti
-      covers every wall. Deals happen here, and sometimes worse things.
+      A network of narrow lanes used by those who prefer discretion.
+    details: >
+      Fresh scuff marks on the wall nearest the Market entrance — something
+      heavy was dragged. A dropped cigarette, still lit when it landed judging
+      by the burn mark. Whoever left in a hurry left something behind:
+      a folded receipt from a hotel in the merchant district, three days old.
 
 initial_events:
   - description: >
       A body was found behind the Market before dawn. The victim has not been
       identified. Word is already spreading through the north quarter.
     event_type: inciting_incident
+    visibility: local
+    location: Market
 
   - description: >
       An anonymous tip arrived at the police station: "Ask Marcus what he
       saw three years ago."
     event_type: rumor
+    visibility: public

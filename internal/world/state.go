@@ -1,33 +1,47 @@
 package world
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+	"strings"
+)
 
 // Location represents a named place in the city.
 type Location struct {
 	Name        string `yaml:"name"`
 	Description string `yaml:"description"`
+	Details     string `yaml:"details"` // private; shown only to characters present here
 }
 
 // Event records something that happened during the simulation.
 type Event struct {
-	Tick         int      `yaml:"-"          json:"tick"`
-	Type         string   `yaml:"event_type" json:"type"`
-	Description  string   `yaml:"description" json:"description"`
-	Participants []string `yaml:"participants,omitempty" json:"participants,omitempty"`
+	Tick             int      `yaml:"-"                        json:"tick"`
+	Type             string   `yaml:"event_type"               json:"type"`
+	Description      string   `yaml:"description"              json:"description"`
+	Participants     []string `yaml:"participants,omitempty"   json:"participants,omitempty"`
+	Visibility       string   `yaml:"visibility"               json:"visibility,omitempty"`        // "public" (default) or "local"
+	Location         string   `yaml:"location"                 json:"location,omitempty"`         // location name where event occurred
+	Target           string   `yaml:"target,omitempty"         json:"target,omitempty"`           // optional character or location ID the event is about
+	PrivateRecipient string   `yaml:"private_recipient,omitempty" json:"private_recipient,omitempty"` // if set, only this character sees the event
 }
 
 // WorldConfig is loaded from a scenario's world.yaml.
 type WorldConfig struct {
 	Locations     []Location `yaml:"locations"`
 	InitialEvents []Event    `yaml:"initial_events"`
+	Weather       string     `yaml:"weather"`    // optional initial weather
+	Atmosphere    string     `yaml:"atmosphere"` // optional initial atmosphere
 }
 
 // State holds the current world state for a simulation run.
 type State struct {
-	Tick      int
-	TimeOfDay string
-	Locations []Location
-	EventLog  []Event
+	Tick        int
+	TimeOfDay   string
+	Weather     string // e.g. "clear", "rain", "fog" — empty means unset
+	Atmosphere  string // e.g. "tense", "calm", "oppressive" — empty means unset
+	Tension     int    // narrative tension level 0–10
+	Locations   []Location
+	EventLog    []Event
 }
 
 var timeOfDayLabels = []string{"morning", "afternoon", "evening", "night"}
@@ -35,13 +49,21 @@ var timeOfDayLabels = []string{"morning", "afternoon", "evening", "night"}
 // NewState creates a fresh world from a WorldConfig with tick 0 and time "morning".
 // InitialEvents from cfg are pre-populated into the event log.
 func NewState(cfg WorldConfig) *State {
+	// Default missing Visibility to "public" so old YAML files behave correctly.
 	events := make([]Event, len(cfg.InitialEvents))
 	copy(events, cfg.InitialEvents)
+	for i := range events {
+		if events[i].Visibility == "" {
+			events[i].Visibility = "public"
+		}
+	}
 	return &State{
-		Tick:      0,
-		TimeOfDay: "morning",
-		Locations: cfg.Locations,
-		EventLog:  events,
+		Tick:       0,
+		TimeOfDay:  "morning",
+		Weather:    cfg.Weather,
+		Atmosphere: cfg.Atmosphere,
+		Locations:  cfg.Locations,
+		EventLog:   events,
 	}
 }
 
@@ -52,23 +74,101 @@ func (s *State) AdvanceTick() {
 	s.TimeOfDay = timeOfDayLabels[(s.Tick/6)%4]
 }
 
-// AppendEvent adds an event to the world log.
+// AppendEvent adds an event to the world log, defaulting Visibility to "public" if unset.
 func (s *State) AppendEvent(e Event) {
+	if e.Visibility == "" {
+		e.Visibility = "public"
+	}
 	s.EventLog = append(s.EventLog, e)
 }
 
-// Summary returns a concise description of the world for LLM context.
-func (s *State) Summary() string {
-	recent := s.EventLog
-	if len(recent) > 5 {
-		recent = recent[len(recent)-5:]
+// PublicSummary returns the universal world context available to all characters:
+// time of day, weather, atmosphere, tension, all location names with their public
+// descriptions, and the last 5 public events (visibility == "public" or "").
+func (s *State) PublicSummary() string {
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("It is currently %s.\n", s.TimeOfDay))
+	if s.Weather != "" {
+		sb.WriteString(fmt.Sprintf("Weather: %s.\n", s.Weather))
 	}
-	if len(recent) == 0 {
-		return fmt.Sprintf("It is currently %s. No events have occurred yet.", s.TimeOfDay)
+	if s.Atmosphere != "" {
+		sb.WriteString(fmt.Sprintf("Atmosphere: %s.\n", s.Atmosphere))
 	}
-	summary := fmt.Sprintf("It is currently %s. Recent events:\n", s.TimeOfDay)
-	for _, e := range recent {
-		summary += fmt.Sprintf("- [tick %d] %s\n", e.Tick, e.Description)
+	if s.Tension > 0 {
+		sb.WriteString(fmt.Sprintf("Tension: %d/10.\n", s.Tension))
 	}
-	return summary
+	sb.WriteString("\n")
+
+	sb.WriteString("Known locations:\n")
+	for _, loc := range s.Locations {
+		sb.WriteString(fmt.Sprintf("- %s: %s\n", loc.Name, loc.Description))
+	}
+
+	var publicEvents []Event
+	for _, e := range s.EventLog {
+		if e.Visibility == "public" || e.Visibility == "" {
+			publicEvents = append(publicEvents, e)
+		}
+	}
+	if len(publicEvents) > 5 {
+		publicEvents = publicEvents[len(publicEvents)-5:]
+	}
+	if len(publicEvents) > 0 {
+		sb.WriteString("\nRecent public events:\n")
+		for _, e := range publicEvents {
+			sb.WriteString(fmt.Sprintf("- [tick %d] %s\n", e.Tick, e.Description))
+		}
+	}
+
+	return sb.String()
+}
+
+// LocalContext returns private context for a specific location: the location's
+// Details text, the last 5 local events that occurred there, and optionally the
+// names of characters currently present (presentNames).
+// Returns an empty string if locationID is empty or does not match any known location.
+func (s *State) LocalContext(locationID string, presentNames []string) string {
+	if locationID == "" {
+		return ""
+	}
+
+	var loc *Location
+	for i := range s.Locations {
+		if s.Locations[i].Name == locationID {
+			loc = &s.Locations[i]
+			break
+		}
+	}
+	if loc == nil {
+		log.Printf("world: LocalContext called with unknown location %q — no local context returned", locationID)
+		return ""
+	}
+
+	var sb strings.Builder
+
+	if loc.Details != "" {
+		sb.WriteString(fmt.Sprintf("Your location — %s:\n%s\n", loc.Name, loc.Details))
+	}
+
+	if len(presentNames) > 0 {
+		sb.WriteString(fmt.Sprintf("\nCharacters present at %s: %s\n", loc.Name, strings.Join(presentNames, ", ")))
+	}
+
+	var localEvents []Event
+	for _, e := range s.EventLog {
+		if e.Visibility == "local" && e.Location == locationID {
+			localEvents = append(localEvents, e)
+		}
+	}
+	if len(localEvents) > 5 {
+		localEvents = localEvents[len(localEvents)-5:]
+	}
+	if len(localEvents) > 0 {
+		sb.WriteString("\nLocal events here:\n")
+		for _, e := range localEvents {
+			sb.WriteString(fmt.Sprintf("- [tick %d] %s\n", e.Tick, e.Description))
+		}
+	}
+
+	return sb.String()
 }

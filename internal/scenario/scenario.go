@@ -2,6 +2,7 @@ package scenario
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,8 +14,9 @@ import (
 
 // RuntimeOverrides holds optional per-scenario config from scenario.yaml.
 // All fields are pointers; nil means "not set by this scenario".
+// Model is intentionally excluded: model selection belongs to the user's
+// environment (.env / OLLAMA_MODEL), not to individual scenarios.
 type RuntimeOverrides struct {
-	Model  *string `yaml:"model"`
 	Turns  *int    `yaml:"turns"`
 	Seed   *int64  `yaml:"seed"`
 	Output *string `yaml:"output"`
@@ -39,11 +41,12 @@ type CLIFlags struct {
 
 // Scenario bundles everything needed to run one simulation.
 type Scenario struct {
-	Name       string
-	Dir        string
-	Characters []character.Character
-	World      world.WorldConfig
-	Overrides  RuntimeOverrides
+	Name         string
+	Dir          string
+	Characters   []character.Character   // regular characters only (Type != "game_director")
+	GameDirector *character.Character    // nil if not defined in this scenario
+	World        world.WorldConfig
+	Overrides    RuntimeOverrides
 }
 
 // Load resolves dirOrName to a scenario directory and reads all config files.
@@ -75,7 +78,24 @@ func Load(dirOrName string) (Scenario, error) {
 	if err != nil {
 		return Scenario{}, fmt.Errorf("scenario %q: %w", dirOrName, err)
 	}
-	sc.Characters = chars
+
+	// Separate Game Director(s) from regular characters.
+	var regular []character.Character
+	directorCount := 0
+	for i := range chars {
+		if chars[i].Type == "game_director" {
+			directorCount++
+			if directorCount == 1 {
+				c := chars[i]
+				sc.GameDirector = &c
+			} else if directorCount == 2 {
+				log.Printf("scenario %q: more than one game_director entry found; using the first", dirOrName)
+			}
+		} else {
+			regular = append(regular, chars[i])
+		}
+	}
+	sc.Characters = regular
 
 	// Load world.yaml (required)
 	worldPath := filepath.Join(dir, "world.yaml")
@@ -102,12 +122,10 @@ func Load(dirOrName string) (Scenario, error) {
 }
 
 // MergeConfig produces a final SimConfig applying priority: CLI flags > scenario.yaml overrides > defaults.
+// Model is not overridable by scenarios; it always comes from env vars or CLI flags.
 func MergeConfig(overrides RuntimeOverrides, flags CLIFlags, defaults SimConfig) SimConfig {
 	cfg := defaults
 
-	if overrides.Model != nil {
-		cfg.Model = *overrides.Model
-	}
 	if overrides.Turns != nil {
 		cfg.Turns = *overrides.Turns
 	}

@@ -34,5 +34,8 @@ go.work.sum
 # Generated simulation output
 simulation_output.jsonl
 
+# Simulation summaries
+summaries/
+
 # Claude Code local settings
 .claude/settings.local.json

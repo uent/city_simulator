@@ -14,16 +14,20 @@ The Makefile SHALL provide a `build` target that compiles `cmd/simulator/main.go
 - **WHEN** a developer runs `make build`
 - **THEN** the Go binary SHALL be compiled to `./city-simulator` with no errors
 
-## Requirement: Run target executes the simulator with configurable flags
-The Makefile SHALL provide a `run` target that builds and runs the simulator, with all CLI flags exposed as overridable Makefile variables with defaults matching the app's own defaults.
+## Requirement: Run target invokes the binary without explicit CLI flags
+The Makefile SHALL provide a `run` target that builds and runs the simulator. The `run` target SHALL NOT pass any CLI flags to the binary — all runtime configuration SHALL be sourced from environment variables (loaded from `.env` by the binary) or the binary's hardcoded defaults.
 
-### Scenario: Run with defaults
-- **WHEN** a developer runs `make run`
-- **THEN** the simulator SHALL start with model `llama3`, Ollama URL `http://localhost:11434`, characters file `configs/characters.yaml`, 10 turns, seed 0, and output `simulation_output.jsonl`
+### Scenario: Run with .env configuration
+- **WHEN** a developer runs `make run` with a `.env` file present
+- **THEN** the simulator SHALL start using values from `.env` (e.g., `OLLAMA_MODEL`, `SIM_TURNS`)
 
-### Scenario: Run with custom flags
-- **WHEN** a developer runs `make run MODEL=mistral TURNS=20`
-- **THEN** the simulator SHALL start with model `mistral` and 20 turns, all other flags at their defaults
+### Scenario: Run with inline env override
+- **WHEN** a developer runs `OLLAMA_MODEL=mistral make run`
+- **THEN** the simulator SHALL start with model `mistral`
+
+### Scenario: Run with no .env falls back to binary defaults
+- **WHEN** a developer runs `make run` with no env vars set and no `.env` file
+- **THEN** the simulator SHALL start using its hardcoded defaults
 
 ## Requirement: Test target runs the Go test suite
 The Makefile SHALL provide a `test` target that runs `go test ./...` with verbose output.

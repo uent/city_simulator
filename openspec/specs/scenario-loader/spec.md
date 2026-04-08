@@ -1,4 +1,4 @@
-## ADDED Requirements
+## Requirements
 
 ### Requirement: Scenario directory structure
 A scenario SHALL be a directory containing: `characters.yaml` (required), `world.yaml` (required), and `scenario.yaml` (optional). No other files are required. Extra files SHALL be silently ignored.
@@ -27,19 +27,24 @@ The system SHALL provide a `Load(dirOrName string) (Scenario, error)` function. 
 - **THEN** the function SHALL return a non-nil error indicating the scenario was not found
 
 ### Requirement: WorldConfig loaded from `world.yaml`
-The system SHALL define a `WorldConfig` struct with: `Locations []Location` (each with `Name` and `Description` string fields) and `InitialEvents []world.Event` (optional). The loader SHALL populate this struct from `world.yaml`.
 
-#### Scenario: Locations parsed correctly
-- **WHEN** `world.yaml` contains two location entries
-- **THEN** `Scenario.World.Locations` SHALL have length 2 with matching names and descriptions
+The system SHALL define a `WorldConfig` struct with: `Locations []Location` (each with `Name string`, `Description string`, and `Details string` fields) and `InitialEvents []world.Event` (optional). The loader SHALL populate this struct from `world.yaml`, including the new `Details`, `Visibility`, and `Location` fields on their respective types.
 
-#### Scenario: Initial events parsed
-- **WHEN** `world.yaml` contains an `initial_events` list
-- **THEN** `Scenario.World.InitialEvents` SHALL be populated and appended to world state on simulation start
+#### Scenario: Locations parsed correctly with Details
+- **WHEN** `world.yaml` contains two location entries, one with a `details` key
+- **THEN** `Scenario.World.Locations` SHALL have length 2, with the first location's `Details` field populated and the second's empty
+
+#### Scenario: Initial events parsed with visibility and location
+- **WHEN** `world.yaml` contains an `initial_events` list where one event has `visibility: "local"` and `location: "Tavern"`
+- **THEN** `Scenario.World.InitialEvents` SHALL contain that event with `Visibility == "local"` and `Location == "Tavern"`
 
 #### Scenario: No initial events key
 - **WHEN** `world.yaml` omits `initial_events`
 - **THEN** `Scenario.World.InitialEvents` SHALL be an empty slice and no error returned
+
+#### Scenario: Events without visibility default to public
+- **WHEN** `world.yaml` contains an event that omits the `visibility` key
+- **THEN** the loaded event's `Visibility` field SHALL equal `"public"`
 
 ### Requirement: RuntimeOverrides loaded from `scenario.yaml`
 The system SHALL define a `RuntimeOverrides` struct where all fields are pointers (nil means "not set"): `Model *string`, `Turns *int`, `Seed *int64`, `Output *string`. The loader SHALL parse `scenario.yaml` if present and populate only the fields that appear in the file.
@@ -66,3 +71,23 @@ The system SHALL provide a `MergeConfig(overrides RuntimeOverrides, flags CLIFla
 #### Scenario: Default used when neither CLI nor scenario sets a value
 - **WHEN** neither CLI nor `scenario.yaml` specifies `seed`
 - **THEN** the resolved `SimConfig.Seed` SHALL equal the compiled default (0)
+
+### Requirement: Game Director separation during load
+The system SHALL separate Game Director entries from regular characters when loading `characters.yaml`. `Scenario` SHALL expose a `GameDirector *character.Character` field (nil if none defined) alongside the existing `Characters []character.Character` field (regular characters only).
+
+`Load` SHALL:
+- Populate `Scenario.GameDirector` with the first entry whose `Type == "game_director"`
+- Exclude all `type: game_director` entries from `Scenario.Characters`
+- Log a warning if more than one `type: game_director` entry is found and use only the first
+
+#### Scenario: Single Game Director entry
+- **WHEN** `characters.yaml` contains one entry with `type: game_director` and two regular entries
+- **THEN** `Scenario.GameDirector` SHALL point to that entry, `Scenario.Characters` SHALL have length 2, and no warning is logged
+
+#### Scenario: No Game Director entry
+- **WHEN** `characters.yaml` contains no `type: game_director` entry
+- **THEN** `Scenario.GameDirector` SHALL be nil and all entries SHALL appear in `Scenario.Characters`
+
+#### Scenario: Multiple Game Director entries
+- **WHEN** `characters.yaml` contains two entries with `type: game_director`
+- **THEN** `Scenario.GameDirector` SHALL be set to the first one, a warning SHALL be logged, and `Scenario.Characters` SHALL contain only the non-director entries

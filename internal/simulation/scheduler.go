@@ -12,27 +12,45 @@ type Pair struct {
 	Responder *character.Character
 }
 
-// Scheduler returns character pairs in a round-robin order,
-// optionally shuffled with a seed.
+// Scheduler manages character pairing and initial location assignment.
+// Movement decisions after each exchange are delegated to the LLM via Manager.
 type Scheduler struct {
 	pairs []Pair
 	index int
+	rng   *rand.Rand
 }
 
-// NewScheduler builds all unique pairs from the character list.
-// A non-zero seed shuffles the order.
-func NewScheduler(characters []*character.Character, seed int64) *Scheduler {
+// NewScheduler builds all unique character pairs, assigns random initial
+// locations to all characters, and shuffles pair order.
+// A zero seed uses a random source.
+func NewScheduler(characters []*character.Character, locations []string, seed int64) *Scheduler {
+	src := seed
+	if src == 0 {
+		src = rand.Int63()
+	}
+	rng := rand.New(rand.NewSource(src))
+
 	var pairs []Pair
 	for i := 0; i < len(characters); i++ {
 		for j := i + 1; j < len(characters); j++ {
 			pairs = append(pairs, Pair{Initiator: characters[i], Responder: characters[j]})
 		}
 	}
-	if seed != 0 {
-		r := rand.New(rand.NewSource(seed))
-		r.Shuffle(len(pairs), func(i, k int) { pairs[i], pairs[k] = pairs[k], pairs[i] })
+	rng.Shuffle(len(pairs), func(i, k int) { pairs[i], pairs[k] = pairs[k], pairs[i] })
+
+	s := &Scheduler{
+		pairs: pairs,
+		rng:   rng,
 	}
-	return &Scheduler{pairs: pairs}
+
+	// Assign a random starting location to every character.
+	if len(locations) > 0 {
+		for _, c := range characters {
+			c.Location = locations[rng.Intn(len(locations))]
+		}
+	}
+
+	return s
 }
 
 // Next returns the next pair, cycling indefinitely.
@@ -41,3 +59,4 @@ func (s *Scheduler) Next() Pair {
 	s.index++
 	return p
 }
+
