@@ -60,3 +60,17 @@ func (s *Scheduler) Next() Pair {
 	return p
 }
 
+// AddCharacter creates pairs between newChar and every existing character in known,
+// assigns newChar a random initial location from locations, and appends the pairs.
+func (s *Scheduler) AddCharacter(newChar *character.Character, known []*character.Character, locations []string) {
+	if len(locations) > 0 && newChar.Location == "" {
+		newChar.Location = locations[s.rng.Intn(len(locations))]
+	}
+	for _, c := range known {
+		if c.ID == newChar.ID {
+			continue
+		}
+		s.pairs = append(s.pairs, Pair{Initiator: newChar, Responder: c})
+	}
+}
+

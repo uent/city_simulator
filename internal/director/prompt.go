@@ -12,7 +12,8 @@ import (
 // The prompt describes the current world state and provides a <tools> block
 // listing all 13 available actions. The director is expected to respond with
 // a <tool_calls> JSON array followed by optional free-form narration.
-func BuildDirectorPrompt(state *world.State, chars []*character.Character, tick int) string {
+// If language is non-empty, a "Respond in <language>." instruction is appended.
+func BuildDirectorPrompt(state *world.State, chars []*character.Character, tick int, language string) string {
 	var sb strings.Builder
 
 	sb.WriteString("You are the Game Director for a city simulation. Your role is to generate autonomous world events that make the simulation feel alive and reactive.\n\n")
@@ -58,7 +59,7 @@ func BuildDirectorPrompt(state *world.State, chars []*character.Character, tick 
 		sb.WriteString("\n")
 	}
 
-	sb.WriteString(toolsBlock)
+	sb.WriteString(buildToolsBlock(state.Concept.CharacterSpawnRule, state.Concept.MaxSpawnedCharacters, state.SpawnedCharacters))
 	sb.WriteString("\n\n")
 	sb.WriteString("Respond with a <tool_calls> block containing a JSON array of action calls, followed by optional narration.\n")
 	sb.WriteString("Call 0 to 5 actions. If nothing should happen, use an empty array.\n\n")
@@ -67,12 +68,18 @@ func BuildDirectorPrompt(state *world.State, chars []*character.Character, tick 
 	sb.WriteString(`[{"name":"set_weather","args":{"type":"heavy rain"}},{"name":"narrate","args":{"text":"Thunder rolls across the city."}}]`)
 	sb.WriteString("\n</tool_calls>\n")
 	sb.WriteString("The city braces for the storm.\n")
+	if language != "" {
+		sb.WriteString(fmt.Sprintf("\nRespond in %s.", language))
+	}
 
 	return sb.String()
 }
 
-// toolsBlock is the static <tools> schema embedded in the director prompt.
-const toolsBlock = `<tools>
+// buildToolsBlock returns the <tools> schema for the director prompt.
+// If characterSpawnRule is non-empty, the spawn_character action is included
+// with the rule, a usage warning, and remaining capacity if a cap is set.
+func buildToolsBlock(characterSpawnRule string, maxSpawned, currentSpawned int) string {
+	block := `<tools>
 Available actions — call them by name with the listed args:
 
 ENVIRONMENT
@@ -84,7 +91,21 @@ NPC
   move_npc          args: id(string), destination(string), reason?(string)
   introduce_npc     args: id(string), name(string), role?(string), attitude?(string), motivation?(string), location?(string)
   add_npc_condition    args: id(string), condition(string)
-  remove_npc_condition args: id(string), condition(string)
+  remove_npc_condition args: id(string), condition(string)`
+
+	if characterSpawnRule != "" {
+		capInfo := ""
+		if maxSpawned > 0 {
+			remaining := maxSpawned - currentSpawned
+			capInfo = fmt.Sprintf(" (%d/%d spawned — %d remaining)", currentSpawned, maxSpawned, remaining)
+		}
+		block += fmt.Sprintf(`
+  spawn_character   args: id(string), name(string), age?(int), occupation?(string), motivation?(string), fear?(string), core_belief?(string), internal_tension?(string), formative_events?([]string), location?(string), emotional_state?(string), goals?([]string)
+                    — create a new full character%s. Use sparingly — only when the plot genuinely requires a new participant. Rule: %s`,
+			capInfo, characterSpawnRule)
+	}
+
+	block += `
 
 WORLD EVENTS
   modify_location   args: name(string), description?(string), details?(string)
@@ -94,3 +115,5 @@ WORLD EVENTS
   escalate_tension  args: delta(int, positive=raise, negative=lower)
   narrate           args: text(string)           — public broadcast, no state change
 </tools>`
+	return block
+}

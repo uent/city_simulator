@@ -112,37 +112,42 @@ func (a *CharacterActor) handleCharChat(msg messaging.Message) {
 		Content: fmt.Sprintf("You encounter %s. What do you say?", a.char.Name),
 	})
 
-	initiatorText, err := a.llmClient.Chat(initiatorMsgs)
+	initiatorRaw, err := a.llmClient.Chat(initiatorMsgs)
 	if err != nil {
 		messaging.Reply(msg, messaging.CharChatReply{
 			Err: fmt.Errorf("LLM call for initiator %s: %w", payload.InitiatorName, err),
 		})
 		return
 	}
+	initiatorExpr := ParseExpression(initiatorRaw)
 
 	// Step 2: Generate responder's reply (using pre-built responder system prompt).
+	// Pass the formatted expression so the responder sees both action and speech.
 	responderMsgs := []llm.Message{
 		{Role: "system", Content: payload.ResponderSystem},
-		{Role: "user", Content: initiatorText},
+		{Role: "user", Content: FormatExpression(initiatorExpr)},
 	}
 
-	responderText, err := a.llmClient.Chat(responderMsgs)
+	responderRaw, err := a.llmClient.Chat(responderMsgs)
 	if err != nil {
 		messaging.Reply(msg, messaging.CharChatReply{
 			Err: fmt.Errorf("LLM call for responder %s: %w", a.char.Name, err),
 		})
 		return
 	}
+	responderExpr := ParseExpression(responderRaw)
 
-	// Step 3: Update per-pair history and character memory.
-	a.appendHistory(msg.From, Turn{Tick: msg.Tick, Speaker: msg.From, Text: initiatorText})
-	a.appendHistory(msg.From, Turn{Tick: msg.Tick, Speaker: a.char.ID, Text: responderText})
-	a.char.AddMemory(MemoryEntry{Tick: msg.Tick, Speaker: payload.InitiatorName, Text: initiatorText})
-	a.char.AddMemory(MemoryEntry{Tick: msg.Tick, Speaker: a.char.Name, Text: responderText})
+	// Step 3: Update per-pair history and character memory (store raw text including markers).
+	a.appendHistory(msg.From, Turn{Tick: msg.Tick, Speaker: msg.From, Text: initiatorRaw})
+	a.appendHistory(msg.From, Turn{Tick: msg.Tick, Speaker: a.char.ID, Text: responderRaw})
+	a.char.AddMemory(MemoryEntry{Tick: msg.Tick, Speaker: payload.InitiatorName, Text: initiatorRaw})
+	a.char.AddMemory(MemoryEntry{Tick: msg.Tick, Speaker: a.char.Name, Text: responderRaw})
 
 	messaging.Reply(msg, messaging.CharChatReply{
-		InitiatorText: initiatorText,
-		ResponderText: responderText,
+		InitiatorSpeech: initiatorExpr.Speech,
+		InitiatorAction: initiatorExpr.Action,
+		ResponderSpeech: responderExpr.Speech,
+		ResponderAction: responderExpr.Action,
 	})
 }
 

@@ -24,19 +24,21 @@ type RuntimeOverrides struct {
 
 // SimConfig is the final resolved runtime configuration after merging all sources.
 type SimConfig struct {
-	Model  string
-	Turns  int
-	Seed   int64
-	Output string
+	Model    string
+	Turns    int
+	Seed     int64
+	Output   string
+	Language string
 }
 
 // CLIFlags captures values explicitly provided via CLI flags.
 // Nil means the flag was not set by the user (default was used).
 type CLIFlags struct {
-	Model  *string
-	Turns  *int
-	Seed   *int64
-	Output *string
+	Model    *string
+	Turns    *int
+	Seed     *int64
+	Output   *string
+	Language *string
 }
 
 // Scenario bundles everything needed to run one simulation.
@@ -148,6 +150,9 @@ func MergeConfig(overrides RuntimeOverrides, flags CLIFlags, defaults SimConfig)
 	}
 	if flags.Output != nil {
 		cfg.Output = *flags.Output
+	}
+	if flags.Language != nil {
+		cfg.Language = *flags.Language
 	}
 
 	return cfg

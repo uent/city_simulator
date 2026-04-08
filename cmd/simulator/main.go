@@ -61,6 +61,7 @@ func main() {
 	turns := flag.Int("turns", envOrInt("SIM_TURNS", 10), "Number of simulation ticks")
 	seed := flag.Int64("seed", envOrInt64("SIM_SEED", 0), "Random seed (0 = deterministic round-robin)")
 	output := flag.String("output", envOrString("SIM_OUTPUT", "simulation_output.jsonl"), "JSONL output file path")
+	language := flag.String("language", envOrString("SIM_LANGUAGE", ""), "Language for narrator and character responses (e.g. Spanish, English)")
 
 	for _, arg := range os.Args[1:] {
 		if arg == "--characters" || arg == "-characters" {
@@ -87,6 +88,9 @@ func main() {
 	}
 	if explicitFlags["output"] || os.Getenv("SIM_OUTPUT") != "" {
 		cliFlags.Output = output
+	}
+	if explicitFlags["language"] || os.Getenv("SIM_LANGUAGE") != "" {
+		cliFlags.Language = language
 	}
 
 	// Load scenario.
@@ -132,6 +136,7 @@ func main() {
 		Turns:        simCfg.Turns,
 		Seed:         simCfg.Seed,
 		OutputWriter: outFile,
+		Language:     simCfg.Language,
 	})
 	if err != nil {
 		log.Fatalf("create engine: %v", err)

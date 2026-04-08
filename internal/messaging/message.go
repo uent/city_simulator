@@ -65,9 +65,11 @@ type CharChatPayload struct {
 
 // CharChatReply is the payload returned by the responder actor after a CharChat.
 type CharChatReply struct {
-	InitiatorText string
-	ResponderText string
-	Err           error
+	InitiatorSpeech string
+	InitiatorAction string
+	ResponderSpeech string
+	ResponderAction string
+	Err             error
 }
 
 // MoveDecisionPayload is the payload for a MoveDecision message.

@@ -28,9 +28,11 @@ type Event struct {
 // WorldConcept describes the fundamental nature of the world and its hidden rules.
 // All fields are optional; omitting the concept block in world.yaml leaves this at zero value.
 type WorldConcept struct {
-	Premise string   `yaml:"premise"` // one sentence: the hidden truth characters must conceal
-	Rules   []string `yaml:"rules"`   // constraints defining what is "normal" in this world
-	Flavor  string   `yaml:"flavor"`  // tone/mood descriptor, e.g. "absurdist heist comedy"
+	Premise                string   `yaml:"premise"`                  // one sentence: the hidden truth characters must conceal
+	Rules                  []string `yaml:"rules"`                    // constraints defining what is "normal" in this world
+	Flavor                 string   `yaml:"flavor"`                   // tone/mood descriptor, e.g. "absurdist heist comedy"
+	CharacterSpawnRule     string   `yaml:"character_spawn_rule"`     // if set, director may spawn new characters following this rule
+	MaxSpawnedCharacters   int      `yaml:"max_spawned_characters"`   // max characters the director may spawn (0 = unlimited)
 }
 
 // WorldConfig is loaded from a scenario's world.yaml.
@@ -44,14 +46,15 @@ type WorldConfig struct {
 
 // State holds the current world state for a simulation run.
 type State struct {
-	Tick        int
-	TimeOfDay   string
-	Weather     string // e.g. "clear", "rain", "fog" — empty means unset
-	Atmosphere  string // e.g. "tense", "calm", "oppressive" — empty means unset
-	Tension     int    // narrative tension level 0–10
-	Concept     WorldConcept
-	Locations   []Location
-	EventLog    []Event
+	Tick              int
+	TimeOfDay         string
+	Weather           string // e.g. "clear", "rain", "fog" — empty means unset
+	Atmosphere        string // e.g. "tense", "calm", "oppressive" — empty means unset
+	Tension           int    // narrative tension level 0–10
+	Concept           WorldConcept
+	Locations         []Location
+	EventLog          []Event
+	SpawnedCharacters int    // count of characters created by the director at runtime
 }
 
 var timeOfDayLabels = []string{"morning", "afternoon", "evening", "night"}

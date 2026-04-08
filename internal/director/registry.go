@@ -26,6 +26,7 @@ func NewRegistry() *Registry {
 	r.register(introduceNPCAction{})
 	r.register(addNPCConditionAction{})
 	r.register(removeNPCConditionAction{})
+	r.register(spawnCharacterAction{})
 
 	// World / event actions
 	r.register(modifyLocationAction{})

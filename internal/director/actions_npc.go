@@ -186,6 +186,115 @@ func (removeNPCConditionAction) Execute(args map[string]any, state *world.State,
 	return nil
 }
 
+// spawnCharacterAction creates a new character with a full character sheet.
+// The action is only valid when state.Concept.CharacterSpawnRule is non-empty.
+type spawnCharacterAction struct{}
+
+func (spawnCharacterAction) Name() string { return "spawn_character" }
+
+func (spawnCharacterAction) Summary(args map[string]any) string {
+	name, nameOk := stringArg(args, "name")
+	id, _ := stringArg(args, "id")
+	if nameOk {
+		return "spawn_character: " + name + " (" + id + ")"
+	}
+	return "spawn_character"
+}
+
+func (spawnCharacterAction) Execute(args map[string]any, state *world.State, chars *[]*character.Character) error {
+	if state.Concept.CharacterSpawnRule == "" {
+		return fmt.Errorf("spawn_character: no character_spawn_rule defined in this world")
+	}
+
+	// Enforce the cap if set (0 = unlimited).
+	if max := state.Concept.MaxSpawnedCharacters; max > 0 && state.SpawnedCharacters >= max {
+		return fmt.Errorf("spawn_character: max spawned characters (%d) already reached", max)
+	}
+
+	id, ok := stringArg(args, "id")
+	if !ok || id == "" {
+		return fmt.Errorf("spawn_character: missing required arg 'id'")
+	}
+	name, ok := stringArg(args, "name")
+	if !ok || name == "" {
+		return fmt.Errorf("spawn_character: missing required arg 'name'")
+	}
+
+	// Check for duplicate ID.
+	if findChar(*chars, id) != nil {
+		return fmt.Errorf("spawn_character: character with id %q already exists", id)
+	}
+
+	occupation, _ := stringArg(args, "occupation")
+	motivation, _ := stringArg(args, "motivation")
+	fear, _ := stringArg(args, "fear")
+	coreBelief, _ := stringArg(args, "core_belief")
+	internalTension, _ := stringArg(args, "internal_tension")
+	location, _ := stringArg(args, "location")
+	emotionalState, _ := stringArg(args, "emotional_state")
+	if emotionalState == "" {
+		emotionalState = "neutral"
+	}
+
+	var age int
+	if v, ok := args["age"]; ok {
+		switch n := v.(type) {
+		case float64:
+			age = int(n)
+		case int:
+			age = n
+		}
+	}
+
+	var formativeEvents []string
+	if v, ok := args["formative_events"]; ok {
+		if raw, ok := v.([]any); ok {
+			for _, item := range raw {
+				if s, ok := item.(string); ok {
+					formativeEvents = append(formativeEvents, s)
+				}
+			}
+		}
+	}
+
+	var goals []string
+	if v, ok := args["goals"]; ok {
+		if raw, ok := v.([]any); ok {
+			for _, item := range raw {
+				if s, ok := item.(string); ok {
+					goals = append(goals, s)
+				}
+			}
+		}
+	}
+
+	newChar := &character.Character{
+		ID:              id,
+		Name:            name,
+		Age:             age,
+		Occupation:      occupation,
+		Motivation:      motivation,
+		Fear:            fear,
+		CoreBelief:      coreBelief,
+		InternalTension: internalTension,
+		FormativeEvents: formativeEvents,
+		Location:        location,
+		Goals:           goals,
+		EmotionalState:  emotionalState,
+		MaxMemory:       20,
+		Inbox:           []world.Event{},
+	}
+	*chars = append(*chars, newChar)
+	state.SpawnedCharacters++
+
+	state.AppendEvent(world.Event{
+		Type:        "spawn",
+		Description: fmt.Sprintf("%s (%s) appears in the city.", name, occupation),
+		Visibility:  "public",
+	})
+	return nil
+}
+
 // findChar returns the first character in chars with the given ID, or nil.
 func findChar(chars []*character.Character, id string) *character.Character {
 	for _, c := range chars {

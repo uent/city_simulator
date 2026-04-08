@@ -4,6 +4,13 @@ concept:
     humanos para robar la Golden Comb en HoneyCon. Ningún humano sabe que son osos.
     Si alguien lo descubre, el operativo termina.
   flavor: comedia de robo absurdista con tensión real
+  character_spawn_rule: >
+    Todo personaje nuevo debe ser un oso disfrazado de humano. Debe tener una
+    identidad de cobertura creíble (nombre humano, ocupación plausible en una
+    convención de miel), una debilidad que podría exponerlo (ej: reacción
+    exagerada al olor a miel, confusión con puertas giratorias), y una
+    motivación relacionada con la Golden Comb o con la supervivencia del operativo.
+  max_spawned_characters: 3
   rules:
     - Caminar siempre en dos patas, nunca en cuatro
     - No oler visiblemente la miel — los humanos no reaccionan así ante el aroma

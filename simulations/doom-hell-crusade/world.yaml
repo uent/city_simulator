@@ -1,0 +1,120 @@
+concept:
+  premise: >
+    Este es el Infierno. Un marine del espacio ha cruzado el portal dimensional
+    solo, sin órdenes ni refuerzos, para detener la Convergencia del Hellstone:
+    el ritual con el que Malphas, Príncipe del Séptimo Círculo, colapsará la
+    membrana entre el Infierno y la Tierra. Cada minuto que pasa, el Hellstone
+    pulsa con más fuerza. Cuando llegue a resonancia total, la Tierra será
+    Infierno.
+  flavor: survival horror operístico con momentos de brutalidad casi religiosa
+  character_spawn_rule: >
+    Todo personaje nuevo debe pertenecer a uno de estos tres arquetipos:
+    (1) Demonio renegado — un demonio que se opone a Malphas por razones propias,
+    desconfía del marine pero puede ser útil; tiene un nombre demoníaco, una
+    lealtad fracturada y una agenda personal que puede alinearse o chocar con
+    los objetivos del marine.
+    (2) Alma humana atrapada — un humano muerto cuya conciencia persiste en el
+    Infierno, frágil y aterrorizada pero con información crítica sobre la
+    geografía o el ritual; no puede combatir, solo hablar y esconderse.
+    (3) Heraldo del Príncipe — un emisario de Malphas enviado a negociar,
+    intimidar o engañar; siempre tiene una oferta que parece razonable y un
+    propósito oculto.
+  max_spawned_characters: 4
+  rules:
+    - El Infierno no es caótico al azar — tiene jerarquía, protocolo y orgullo; los demonios de rango esperan ser tratados como potencias
+    - La violencia es la lengua franca, pero no siempre la más eficiente — un demonio que habla puede dar más que uno muerto
+    - El Hellstone pulsa cada cierta cantidad de turnos; su pulso es audible y visible desde cualquier locación — es el reloj de cuenta regresiva del escenario
+    - Los demonios renegados mienten por costumbre; verificar su información siempre tiene un costo
+    - Las almas humanas atrapadas son la única fuente de información sin agenda — pero son extremadamente vulnerables y pueden ser destruidas permanentemente
+
+weather: calor infrarrojo constante — el aire del infierno quema los pulmones de los vivos
+atmosphere: grandeza oscura y decadente — como una catedral construida con huesos y ambición
+
+initial_location: The Flesh Gate
+
+locations:
+  - name: The Flesh Gate
+    description: >
+      El portal de entrada al dominio de Malphas. Una estructura orgánica de
+      veinte metros — carne calcificada entrelazada con metal corrupto — que
+      pulsa lentamente como un corazón. El suelo está cubierto de ceniza gris
+      mezclada con fragmentos de armadura de marines anteriores.
+    details: >
+      Dos columnas de runa a los lados del arco central emiten un pulso rojizo
+      cada cuarenta segundos — el mismo ritmo que el Hellstone en el Sanctum.
+      Hay tres rutas visibles desde aquí: un corredor de carne hacia el norte
+      (señalado por calor extremo), una hendidura en la roca hacia el este
+      (oscura, sin señales de actividad reciente), y una plataforma elevada al
+      oeste donde hay restos de equipamiento militar humano sin identificar.
+      El portal de entrada está sellado desde adentro — no hay vuelta atrás.
+
+  - name: The Lava Wastes
+    description: >
+      Una llanura de piedra volcánica cruzada por ríos de lava activa. El
+      horizonte está dominado por la silueta de la Catedral de Hueso, visible
+      a kilómetros de distancia como una aguja negra contra el cielo rojo
+      de sangre. El calor es suficiente para fundir plástico en minutos.
+    details: >
+      Los ríos de lava siguen patrones predecibles — hay ventanas de cruce de
+      aproximadamente doce segundos entre pulsos. Tres estructuras de piedra
+      negra emergen de la lava solidificada: la más grande tiene una puerta
+      sellada con un sello de rango medio (abierta con fuerza o con autoridad
+      demoníaca). En el flanco norte hay una formación de roca que crea una
+      zona de sombra térmica — el único punto donde la temperatura baja lo
+      suficiente para que un humano vivo permanezca sin daño prolongado.
+
+  - name: The Cathedral of Bone
+    description: >
+      Una estructura de dimensiones imposibles construida enteramente con
+      huesos de criaturas que ya no existen en ningún plano conocido. Los
+      arcos del techo se pierden en oscuridad. En el altar central hay un
+      fragmento del Hellstone secundario — no el principal, pero conectado
+      a él — que vibra con una frecuencia que hace sangrar los oídos.
+    details: >
+      El fragmento del Hellstone en el altar está protegido por un campo de
+      fuerza demoníaca que solo se desactiva cuando el operador del campo
+      está muerto o lo retira voluntariamente. Hay cuatro naves laterales,
+      cada una sellada; tres tienen sellos deteriorados que pueden forzarse.
+      El eco en la catedral amplifica cualquier sonido — moverse en silencio
+      aquí es casi imposible. Las paredes absorben magia y energía de plasma;
+      armas balísticas funcionan sin penalización.
+
+  - name: The Necropolis Vault
+    description: >
+      Una cámara subterránea bajo la Catedral, accesible solo por una trampilla
+      de piedra en la nave norte. Almacena los registros rituales de Malphas —
+      tablillas de obsidiana con la secuencia exacta del ritual de Convergencia
+      y, crucialmente, sus condiciones de cancelación.
+    details: >
+      Las tablillas están organizadas por fecha de creación, no por relevancia —
+      encontrar las que describen la cancelación requiere tiempo o alguien que
+      sepa leer el lenguaje antiguo del Infierno. Hay signos de que alguien
+      estuvo aquí recientemente: una tablilla fuera de su posición, marcas de
+      garra frescas en el suelo de piedra. El único acceso es la trampilla de
+      arriba; no hay salida lateral. La oscuridad es total sin fuente de luz propia.
+
+  - name: The Throne Sanctum
+    description: >
+      La cámara del trono de Malphas, en el corazón de su dominio. El Hellstone
+      original flota sobre el trono — una esfera del tamaño de un puño humano
+      que pulsa con luz negra y emite un tono que se siente en los dientes.
+      Malphas no necesita esconderse aquí. Este es su lugar de máximo poder.
+    details: >
+      El Hellstone está a tres metros de altura, sobre el trono, dentro de un
+      campo de energía que se intensifica con cada pulso. Destruirlo requiere
+      una cantidad masiva de energía concentrada o una intervención ritual
+      específica descrita en las tablillas del Necropolis Vault. El trono en
+      sí es el nodo de poder de Malphas — si él no está presente, el campo
+      del Hellstone es un veinte por ciento más débil. Hay dos salidas
+      secundarias: una hacia los Páramos de Lava (ruta de escape) y un
+      portal dimensional sellado cuyo destino se desconoce.
+
+initial_events:
+  - description: >
+      El Hellstone emite su primer pulso visible desde el Flesh Gate — una
+      onda de luz negra que atraviesa el cielo rojo y hace vibrar las columnas
+      de runa. Según los registros capturados en la UAC antes del portal, esto
+      indica que la Convergencia alcanzará resonancia total en aproximadamente
+      treinta ciclos. Cada pulso subsiguiente será más intenso. El portal de
+      entrada se sella detrás del marine con un sonido de carne cerrándose.
+      No hay refuerzos. No hay extracción. La única salida es hacia adelante.

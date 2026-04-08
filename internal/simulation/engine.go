@@ -24,17 +24,19 @@ type Config struct {
 	Turns        int
 	Seed         int64
 	OutputWriter io.Writer
+	Language     string
 }
 
 // Engine drives the simulation tick loop.
 type Engine struct {
-	cfg           Config
-	chars         []*character.Character
-	directorChar  *character.Character // nil if scenario has no Game Director
-	registry      *director.Registry
-	world         *world.State
-	scheduler     *Scheduler
-	locationNames []string
+	cfg             Config
+	chars           []*character.Character
+	directorChar    *character.Character // nil if scenario has no Game Director
+	registry        *director.Registry
+	world           *world.State
+	scheduler       *Scheduler
+	locationNames   []string
+	registeredChars map[string]bool // tracks which character IDs have bus actors
 }
 
 // NewEngine validates config and returns a ready Engine.
@@ -54,21 +56,51 @@ func NewEngine(cfg Config) (*Engine, error) {
 		locationNames[i] = loc.Name
 	}
 
+	registered := make(map[string]bool, len(chars))
+	for _, c := range chars {
+		registered[c.ID] = true
+	}
+
 	return &Engine{
-		cfg:           cfg,
-		chars:         chars,
-		directorChar:  cfg.Scenario.GameDirector,
-		registry:      director.NewRegistry(),
-		world:         w,
-		scheduler:     NewScheduler(chars, locationNames, cfg.Seed),
-		locationNames: locationNames,
+		cfg:             cfg,
+		chars:           chars,
+		directorChar:    cfg.Scenario.GameDirector,
+		registry:        director.NewRegistry(),
+		world:           w,
+		scheduler:       NewScheduler(chars, locationNames, cfg.Seed),
+		locationNames:   locationNames,
+		registeredChars: registered,
 	}, nil
+}
+
+// registerSpawnedChars creates bus actors for any characters in e.chars that
+// don't yet have a registered actor, starts them with ctx, and adds pairs to
+// the scheduler. Should be called after the director runs each tick.
+func (e *Engine) registerSpawnedChars(ctx context.Context) {
+	for _, c := range e.chars {
+		if e.registeredChars[c.ID] {
+			continue
+		}
+		actor := character.NewCharacterActor(c, e.cfg.LLMClient)
+		e.cfg.Bus.Register(actor)
+		actor.Start(ctx)
+		// Add pairs between this character and all already-known characters.
+		known := make([]*character.Character, 0, len(e.chars)-1)
+		for _, existing := range e.chars {
+			if existing.ID != c.ID && e.registeredChars[existing.ID] {
+				known = append(known, existing)
+			}
+		}
+		e.scheduler.AddCharacter(c, known, e.locationNames)
+		e.registeredChars[c.ID] = true
+		log.Printf("[spawn] created character %s (%s)", c.ID, c.Name)
+	}
 }
 
 // runDirector invokes the Game Director for the current tick using the tool-use
 // dispatch loop. Errors per action are logged and skipped (fail-open).
 func (e *Engine) runDirector(ctx context.Context, tick int) {
-	systemPrompt := director.BuildDirectorPrompt(e.world, e.chars, tick)
+	systemPrompt := director.BuildDirectorPrompt(e.world, e.chars, tick, e.cfg.Language)
 	raw, err := e.cfg.LLMClient.Chat([]llm.Message{
 		{Role: "system", Content: systemPrompt},
 		{Role: "user", Content: fmt.Sprintf("Generate world events for tick %d.", tick)},
@@ -91,7 +123,7 @@ func (e *Engine) runDirector(ctx context.Context, tick int) {
 // generateAndSaveSummary produces a narrative summary of the completed simulation
 // and writes it to a timestamped file. Errors are logged and suppressed (fail-open).
 func (e *Engine) generateAndSaveSummary(ctx context.Context) {
-	text, err := summary.GenerateSummary(ctx, e.cfg.LLMClient, e.world, e.chars, e.cfg.Scenario)
+	text, err := summary.GenerateSummary(ctx, e.cfg.LLMClient, e.world, e.chars, e.cfg.Scenario, e.cfg.Language)
 	if err != nil {
 		log.Printf("summary: generation failed (skipping): %v", err)
 		return
@@ -109,8 +141,12 @@ type logEntry struct {
 	Tick              int    `json:"tick"`
 	Initiator         string `json:"initiator"`
 	InitiatorLocation string `json:"initiator_location"`
+	InitiatorSpeech   string `json:"initiator_speech"`
+	InitiatorAction   string `json:"initiator_action"`
 	Responder         string `json:"responder"`
 	ResponderLocation string `json:"responder_location"`
+	ResponderSpeech   string `json:"responder_speech"`
+	ResponderAction   string `json:"responder_action"`
 }
 
 // Run executes the simulation for the configured number of turns.
@@ -128,6 +164,9 @@ func (e *Engine) Run(ctx context.Context) error {
 		// Game Director generates autonomous world events before characters act.
 		if e.directorChar != nil {
 			e.runDirector(ctx, tick)
+
+			// Register any characters spawned by the director this tick.
+			e.registerSpawnedChars(ctx)
 
 			// Broadcast DirectorDirective so actors acknowledge tick start.
 			replies, err := e.cfg.Bus.Broadcast(messaging.NewRequest(
@@ -150,7 +189,7 @@ func (e *Engine) Run(ctx context.Context) error {
 		if local := e.world.LocalContext(pair.Initiator.Location, initiatorPeers); local != "" {
 			initiatorWorldCtx += "\n" + local
 		}
-		initiatorSystem := character.BuildSystemPrompt(*pair.Initiator) +
+		initiatorSystem := character.BuildSystemPrompt(*pair.Initiator, e.cfg.Language) +
 			character.FlushInbox(pair.Initiator) +
 			"\n\nWorld context:\n" + initiatorWorldCtx +
 			character.BuildZoneContext(zoneRoster)
@@ -160,7 +199,7 @@ func (e *Engine) Run(ctx context.Context) error {
 		if local := e.world.LocalContext(pair.Responder.Location, responderPeers); local != "" {
 			responderWorldCtx += "\n" + local
 		}
-		responderSystem := character.BuildSystemPrompt(*pair.Responder) +
+		responderSystem := character.BuildSystemPrompt(*pair.Responder, e.cfg.Language) +
 			character.FlushInbox(pair.Responder) +
 			"\n\nWorld context:\n" + responderWorldCtx +
 			character.BuildZoneContext(zoneRoster)
@@ -201,8 +240,14 @@ func (e *Engine) Run(ctx context.Context) error {
 			pair.Initiator.Name, pair.Initiator.Location,
 			pair.Responder.Name, pair.Responder.Location,
 		)
-		fmt.Printf("%s: %s\n", pair.Initiator.Name, result.InitiatorText)
-		fmt.Printf("%s: %s\n", pair.Responder.Name, result.ResponderText)
+		if result.InitiatorAction != "" {
+			fmt.Printf("*%s*\n", result.InitiatorAction)
+		}
+		fmt.Printf("%s: %s\n", pair.Initiator.Name, result.InitiatorSpeech)
+		if result.ResponderAction != "" {
+			fmt.Printf("*%s*\n", result.ResponderAction)
+		}
+		fmt.Printf("%s: %s\n", pair.Responder.Name, result.ResponderSpeech)
 
 		// Append conversation event before advancing tick.
 		e.world.AppendEvent(world.Event{
@@ -221,7 +266,7 @@ func (e *Engine) Run(ctx context.Context) error {
 				c.ID,
 				tick,
 				messaging.MoveDecisionPayload{
-					SystemPrompt: character.BuildMovementPrompt(*c, e.locationNames, zoneRoster),
+					SystemPrompt: character.BuildMovementPrompt(*c, e.locationNames, zoneRoster, e.cfg.Language),
 					Locations:    e.locationNames,
 				},
 			)
@@ -244,8 +289,12 @@ func (e *Engine) Run(ctx context.Context) error {
 				Tick:              tick,
 				Initiator:         pair.Initiator.ID,
 				InitiatorLocation: pair.Initiator.Location,
+				InitiatorSpeech:   result.InitiatorSpeech,
+				InitiatorAction:   result.InitiatorAction,
 				Responder:         pair.Responder.ID,
 				ResponderLocation: pair.Responder.Location,
+				ResponderSpeech:   result.ResponderSpeech,
+				ResponderAction:   result.ResponderAction,
 			}
 			line, _ := json.Marshal(entry)
 			fmt.Fprintf(e.cfg.OutputWriter, "%s\n", line)

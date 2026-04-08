@@ -7,7 +7,8 @@ import (
 
 // BuildSystemPrompt constructs a system-role prompt from a character's persona.
 // Sections with empty or nil fields are silently omitted.
-func BuildSystemPrompt(c Character) string {
+// If language is non-empty, a "Respond in <language>." instruction is appended.
+func BuildSystemPrompt(c Character, language string) string {
 	var sb strings.Builder
 
 	sb.WriteString(fmt.Sprintf("You are %s, a %d-year-old %s.\n\n", c.Name, c.Age, c.Occupation))
@@ -110,6 +111,10 @@ func BuildSystemPrompt(c Character) string {
 	}
 
 	sb.WriteString("Stay in character at all times. Respond as this person would. Keep responses concise.")
+	sb.WriteString("\nWhen you perform a physical action, describe it using *asterisks* before or within your speech (e.g. *glances at the door* We should talk elsewhere.). Omit the markers if you are only speaking.")
+	if language != "" {
+		sb.WriteString(fmt.Sprintf("\nRespond in %s.", language))
+	}
 	return sb.String()
 }
 
@@ -159,7 +164,8 @@ func BuildZoneContext(roster map[string][]string) string {
 // The expected response is an exact location name from the provided list, or "stay".
 // zoneRoster (location → character names) is appended as a "Who is where" section
 // when non-empty, so the character can reason about where others are.
-func BuildMovementPrompt(c Character, locations []string, zoneRoster map[string][]string) string {
+// If language is non-empty, a "Respond in <language>." instruction is appended.
+func BuildMovementPrompt(c Character, locations []string, zoneRoster map[string][]string, language string) string {
 	var sb strings.Builder
 
 	sb.WriteString(fmt.Sprintf("You are %s.\n", c.Name))
@@ -183,5 +189,8 @@ func BuildMovementPrompt(c Character, locations []string, zoneRoster map[string]
 	sb.WriteString("\nBased on your goals and what just happened, decide where to go next.")
 	sb.WriteString("\nRespond with ONLY the exact location name from the list above.")
 	sb.WriteString("\nIf you want to stay where you are, respond with exactly: stay")
+	if language != "" {
+		sb.WriteString(fmt.Sprintf("\nRespond in %s.", language))
+	}
 	return sb.String()
 }
