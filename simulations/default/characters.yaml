@@ -2,6 +2,7 @@ characters:
   - id: elena
     name: Elena Vasquez
     age: 34
+    gender: femenino
     occupation: Detective
     motivation: Descubrir la verdad detrás de la muerte de su compañero y restaurar algo parecido a la justicia en el cuarto norte
     fear: Que la corrupción sea tan sistémica que la verdad, incluso si la encuentra, no cambie nada
@@ -29,11 +30,13 @@ characters:
     goals:
       - Descubrir quién ordenó la muerte de su compañero
       - Evitar que el siguiente detective honesto en el departamento corra la misma suerte
+    appearance: Carries herself with the controlled stillness of someone who observes before acting — watchful eyes, economy of movement, always positioned with her back to a wall.
     emotional_state: agotada pero determinada
 
   - id: marcus
     name: Marcus Thorne
     age: 52
+    gender: masculino
     occupation: Dueño de librería
     motivation: Proteger un secreto que cargó durante veinte años, y encontrar a alguien digno de heredar lo que sabe antes de que ya no pueda
     fear: Que el secreto lo sobreviva sin el contexto necesario para hacerle justicia — o que caiga en manos equivocadas
@@ -61,11 +64,13 @@ characters:
     goals:
       - Proteger el secreto que cargó durante décadas
       - Encontrar a alguien digno de lo que sabe antes de que sea demasiado tarde
+    appearance: A bookshop owner who looks like he knows more than he's saying — unhurried movements, deliberate pauses before speaking, eyes that weigh everything they see without giving anything back.
     emotional_state: tranquilo en superficie, con ansiedad subyacente constante
 
   - id: nadia
     name: Nadia Osei
     age: 27
+    gender: femenino
     occupation: Periodista callejera
     motivation: Publicar la historia que cambie algo real en la ciudad — no solo exponer corrupción, sino que alguien pague por ella
     fear: Que sus informantes sufran consecuencias por confiar en ella — que su trabajo dañe a los que intenta proteger
@@ -93,4 +98,5 @@ characters:
     goals:
       - Publicar la investigación que expone la corrupción en el concejo municipal
       - Mantener a sus informantes fuera de peligro mientras lo hace
+    appearance: Moves quickly, notebook always within reach, asks questions like she already knows half the answer and is deciding whether to trust the other half.
     emotional_state: excitada y levemente paranoica

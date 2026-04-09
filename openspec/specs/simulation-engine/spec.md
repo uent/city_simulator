@@ -15,6 +15,17 @@ The engine SHALL NOT hold a reference to `conversation.Manager`. All inter-actor
 - **WHEN** `NewEngine` is called with a `Scenario` that has zero or one regular character (excluding any GameDirector)
 - **THEN** the function SHALL return a nil engine and a non-nil error stating at least two characters are required
 
+### Requirement: World concept printed at run start
+At the beginning of `Engine.Run`, before the first tick, the engine SHALL print the world concept block by delegating to the `simulation-premise-display` logic. If `Scenario.World.Concept.Premise` is empty, the engine SHALL skip this step silently.
+
+#### Scenario: Concept block appears before first tick
+- **WHEN** `Engine.Run` is called with a scenario whose `Concept.Premise` is non-empty
+- **THEN** the concept block SHALL be written to stdout before any tick output (e.g., `[Tick 1]` lines)
+
+#### Scenario: No concept block when premise is absent
+- **WHEN** `Engine.Run` is called with a scenario whose `Concept.Premise` is empty
+- **THEN** no concept block header SHALL appear in stdout and the simulation SHALL proceed normally
+
 ### Requirement: Game Director tick invocation
 The system SHALL invoke the Game Director at the beginning of each tick, before scheduling any character exchange, when `Engine.director` is non-nil.
 

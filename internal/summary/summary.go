@@ -25,7 +25,7 @@ func GenerateSummary(_ context.Context, client *llm.Client, w *world.State, char
 	if err != nil {
 		return "", fmt.Errorf("summary LLM call failed: %w", err)
 	}
-	return text, nil
+	return text + renderCharacterCards(chars), nil
 }
 
 // SaveSummary writes content to summaries/<scenarioName>-<timestamp>.md.
@@ -44,6 +44,139 @@ func SaveSummary(scenarioName, content string) (string, error) {
 		return "", fmt.Errorf("write summary file: %w", err)
 	}
 	return path, nil
+}
+
+// renderCharacterCards produces a Markdown "Character Cards" section for all
+// non-director characters. Returns empty string if there are no eligible characters.
+func renderCharacterCards(chars []*character.Character) string {
+	var cards []string
+	for _, c := range chars {
+		if c.Type == "game_director" {
+			continue
+		}
+		var sb strings.Builder
+		sb.WriteString(fmt.Sprintf("### %s\n\n", c.Name))
+
+		if c.Age != 0 {
+			sb.WriteString(fmt.Sprintf("- **Age:** %d\n", c.Age))
+		}
+		if c.Occupation != "" {
+			sb.WriteString(fmt.Sprintf("- **Occupation:** %s\n", c.Occupation))
+		}
+		if c.Appearance != "" {
+			sb.WriteString(fmt.Sprintf("- **Appearance:** %s\n", c.Appearance))
+		}
+		if c.Location != "" {
+			sb.WriteString(fmt.Sprintf("- **Location:** %s\n", c.Location))
+		}
+		if c.EmotionalState != "" {
+			sb.WriteString(fmt.Sprintf("- **Emotional State:** %s\n", c.EmotionalState))
+		}
+		if len(c.Goals) > 0 {
+			sb.WriteString(fmt.Sprintf("- **Goals:** %s\n", strings.Join(c.Goals, "; ")))
+		}
+		if c.Motivation != "" {
+			sb.WriteString(fmt.Sprintf("- **Motivation:** %s\n", c.Motivation))
+		}
+		if c.Fear != "" {
+			sb.WriteString(fmt.Sprintf("- **Fear:** %s\n", c.Fear))
+		}
+		if c.CoreBelief != "" {
+			sb.WriteString(fmt.Sprintf("- **Core Belief:** %s\n", c.CoreBelief))
+		}
+		if c.InternalTension != "" {
+			sb.WriteString(fmt.Sprintf("- **Internal Tension:** %s\n", c.InternalTension))
+		}
+
+		if len(c.FormativeEvents) > 0 {
+			sb.WriteString("- **Formative Events:**\n")
+			for _, e := range c.FormativeEvents {
+				sb.WriteString(fmt.Sprintf("  - %s\n", e))
+			}
+		}
+
+		v := c.Voice
+		if v.Formality != "" || v.VerbalTics != "" || v.ResponseLength != "" || v.HumorType != "" || v.CommunicationStyle != "" {
+			sb.WriteString("- **Voice:**\n")
+			if v.Formality != "" {
+				sb.WriteString(fmt.Sprintf("  - Formality: %s\n", v.Formality))
+			}
+			if v.VerbalTics != "" {
+				sb.WriteString(fmt.Sprintf("  - Verbal Tics: %s\n", v.VerbalTics))
+			}
+			if v.ResponseLength != "" {
+				sb.WriteString(fmt.Sprintf("  - Response Length: %s\n", v.ResponseLength))
+			}
+			if v.HumorType != "" {
+				sb.WriteString(fmt.Sprintf("  - Humor Type: %s\n", v.HumorType))
+			}
+			if v.CommunicationStyle != "" {
+				sb.WriteString(fmt.Sprintf("  - Communication Style: %s\n", v.CommunicationStyle))
+			}
+		}
+
+		r := c.RelationalDefaults
+		if r.Strangers != "" || r.Authority != "" || r.Vulnerable != "" {
+			sb.WriteString("- **Relational Defaults:**\n")
+			if r.Strangers != "" {
+				sb.WriteString(fmt.Sprintf("  - Strangers: %s\n", r.Strangers))
+			}
+			if r.Authority != "" {
+				sb.WriteString(fmt.Sprintf("  - Authority: %s\n", r.Authority))
+			}
+			if r.Vulnerable != "" {
+				sb.WriteString(fmt.Sprintf("  - Vulnerable: %s\n", r.Vulnerable))
+			}
+		}
+
+		if c.CoverIdentity != nil {
+			ci := c.CoverIdentity
+			sb.WriteString("- **Cover Identity:**\n")
+			if ci.Alias != "" {
+				sb.WriteString(fmt.Sprintf("  - Alias: %s\n", ci.Alias))
+			}
+			if ci.Role != "" {
+				sb.WriteString(fmt.Sprintf("  - Role: %s\n", ci.Role))
+			}
+			if ci.Backstory != "" {
+				sb.WriteString(fmt.Sprintf("  - Backstory: %s\n", ci.Backstory))
+			}
+			if len(ci.Weaknesses) > 0 {
+				sb.WriteString("  - Weaknesses:\n")
+				for _, w := range ci.Weaknesses {
+					sb.WriteString(fmt.Sprintf("    - %s\n", w))
+				}
+			}
+		}
+
+		if len(c.DialogueExamples) > 0 {
+			sb.WriteString("- **Dialogue Examples:**\n")
+			for _, d := range c.DialogueExamples {
+				sb.WriteString(fmt.Sprintf("  - %s\n", d))
+			}
+		}
+
+		if len(c.Judgments) > 0 {
+			sb.WriteString("- **Relationships:**\n")
+			for _, j := range c.Judgments {
+				sb.WriteString(fmt.Sprintf("  - **%s** — Trust: %s | Interest: %s | Threat: %s\n", j.Name, j.Trust, j.Interest, j.Threat))
+				if j.Impression != "" {
+					sb.WriteString(fmt.Sprintf("    > %s\n", j.Impression))
+				}
+			}
+		}
+
+		cards = append(cards, sb.String())
+	}
+
+	if len(cards) == 0 {
+		return ""
+	}
+
+	var result strings.Builder
+	result.WriteString("\n\n---\n\n## Character Cards\n\n")
+	result.WriteString(strings.Join(cards, "\n"))
+	return result.String()
 }
 
 func buildPrompt(w *world.State, chars []*character.Character, sc scenario.Scenario, language string) (system, user string) {

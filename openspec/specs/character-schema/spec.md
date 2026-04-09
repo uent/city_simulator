@@ -102,6 +102,20 @@ The `Character` struct SHALL expose `Inventory []string` (YAML key `inventory`) 
 
 ---
 
+### Requirement: Gender field on Character
+
+The `Character` struct SHALL expose a `Gender string` field (YAML key `gender`). The field is optional; omitting it SHALL leave `Gender` as an empty string and SHALL not cause a load error. No validation of allowed values is performed — the field is free-form.
+
+#### Scenario: Gender parsed from YAML
+- **WHEN** a `characters.yaml` entry includes `gender: "femenino"`
+- **THEN** `LoadCharacters` SHALL populate `Character.Gender` with `"femenino"` and return no error
+
+#### Scenario: Gender absent defaults to empty string
+- **WHEN** a `characters.yaml` entry omits the `gender` key
+- **THEN** `Character.Gender` SHALL be an empty string and loading SHALL return no error
+
+---
+
 ### Requirement: Removal of Personality and Backstory fields
 
 The `Character` struct SHALL NOT contain `Personality []string` or `Backstory string` fields. YAML files containing these keys SHALL have them silently ignored by the loader.
@@ -116,7 +130,7 @@ The `Character` struct SHALL NOT contain `Personality []string` or `Backstory st
 
 `BuildSystemPrompt(c character.Character) string` SHALL produce a system prompt using the following section order, omitting any section whose fields are all empty:
 
-1. Identity line: `"You are {Name}, a {Age}-year-old {Occupation}."`
+1. Identity line: `"You are {Name}, a {Age}-year-old {Gender} {Occupation}."` when `Gender` is non-empty, or `"You are {Name}, a {Age}-year-old {Occupation}."` when `Gender` is empty.
 2. `Motivación:` line using `Motivation`
 3. `Miedo:` line using `Fear`
 4. `Creencia central:` line using `CoreBelief`
@@ -129,8 +143,16 @@ The `Character` struct SHALL NOT contain `Personality []string` or `Backstory st
 11. `Ejemplos de diálogo:` quoted block using `DialogueExamples`
 12. Closing instruction: `"Stay in character at all times. Respond as this person would. Keep responses concise."`
 
+#### Scenario: Gender included in identity line when present
+- **WHEN** `BuildSystemPrompt` is called with a `Character` where `Gender` is `"femenino"` and `Occupation` is `"Detective"`
+- **THEN** the returned string SHALL contain `"femenino Detective"` in the identity line
+
+#### Scenario: Gender omitted from identity line when empty
+- **WHEN** `BuildSystemPrompt` is called with a `Character` where `Gender` is `""`
+- **THEN** the identity line SHALL follow the original format without a gender token
+
 #### Scenario: Full character produces all sections
-- **WHEN** `BuildSystemPrompt` is called with a `Character` where all new fields are populated
+- **WHEN** `BuildSystemPrompt` is called with a `Character` where all fields are populated
 - **THEN** the returned string SHALL contain the identity line, all labeled sections, and the closing instruction
 
 #### Scenario: Empty fields are silently omitted
@@ -154,3 +176,37 @@ The system SHALL provide `simulations/CHARACTER_RULES.md` — a Markdown documen
 #### Scenario: Rulebook contains all required sections
 - **WHEN** `CHARACTER_RULES.md` is read
 - **THEN** it SHALL contain sections covering: the YAML template, field descriptions, anti-patterns, and a worked example
+
+---
+
+### Requirement: Appearance field on Character
+
+The `Character` struct SHALL expose an `Appearance string` field (YAML key `appearance`). This field contains a single authored sentence describing how this character presents to others on first encounter — their visible manner, posture, or energy — without revealing internal psychology. The field is optional; omitting it in YAML SHALL leave the field as an empty string.
+
+`ObservableSnapshot` SHALL include `Appearance` in the observable profile passed to judgment formation. `BuildSystemPrompt` SHALL NOT include `Appearance` in a character's own system prompt (it describes how others see them, not how they see themselves).
+
+#### Scenario: Appearance parsed from YAML
+- **WHEN** a `characters.yaml` entry contains `appearance: "Carries herself with the controlled stillness of someone who observes before acting"`
+- **THEN** `Character.Appearance` SHALL equal that string after loading and no error returned
+
+#### Scenario: Appearance absent defaults to empty string
+- **WHEN** a `characters.yaml` entry omits the `appearance` key
+- **THEN** `Character.Appearance` SHALL be an empty string and `LoadCharacters` SHALL return no error
+
+#### Scenario: Appearance included in observable snapshot
+- **WHEN** `ObservableSnapshot` is called on a character with a non-empty `Appearance`
+- **THEN** the returned `ObservableProfile.Appearance` SHALL equal the character's `Appearance` value
+
+#### Scenario: Appearance absent from character's own system prompt
+- **WHEN** `BuildSystemPrompt` is called with a character who has a non-empty `Appearance`
+- **THEN** the returned system prompt SHALL NOT contain the `Appearance` text
+
+---
+
+### Requirement: Appearance added to all existing scenario characters
+
+All `characters.yaml` files in the `simulations/` directory SHALL include an `appearance` field on every non-director character entry. Director characters (type `game_director`) SHALL NOT have an `appearance` field.
+
+#### Scenario: Existing scenario characters have appearance field
+- **WHEN** any `characters.yaml` in `simulations/default/`, `simulations/honey-heist/`, `simulations/doom-hell-crusade/`, or `simulations/test-scenario/` is loaded
+- **THEN** every non-director character SHALL have a non-empty `Appearance` after loading

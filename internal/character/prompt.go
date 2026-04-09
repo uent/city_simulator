@@ -11,7 +11,11 @@ import (
 func BuildSystemPrompt(c Character, language string) string {
 	var sb strings.Builder
 
-	sb.WriteString(fmt.Sprintf("You are %s, a %d-year-old %s.\n\n", c.Name, c.Age, c.Occupation))
+	if c.Gender != "" {
+		sb.WriteString(fmt.Sprintf("You are %s, a %d-year-old %s %s.\n\n", c.Name, c.Age, c.Gender, c.Occupation))
+	} else {
+		sb.WriteString(fmt.Sprintf("You are %s, a %d-year-old %s.\n\n", c.Name, c.Age, c.Occupation))
+	}
 
 	if c.Motivation != "" {
 		sb.WriteString(fmt.Sprintf("Motivación: %s\n\n", c.Motivation))

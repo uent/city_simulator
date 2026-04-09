@@ -1,4 +1,4 @@
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Summary generation from world state
 The system SHALL provide a `GenerateSummary(ctx context.Context, client *llm.Client, w *world.State, chars []*character.Character, sc scenario.Scenario, language string) (string, error)` function in the `internal/summary` package that constructs a prompt from world events and character final states, sends it to the LLM, and returns the complete summary string.
@@ -40,22 +40,3 @@ The LLM system prompt SHALL instruct the model to produce a rich narrative of at
 #### Scenario: Only game director characters present
 - **WHEN** all characters are of type `game_director`
 - **THEN** the function SHALL return the narrative text with no character cards block appended
-
-### Requirement: Timestamped summary file persistence
-The system SHALL provide a `SaveSummary(scenarioName string, content string) (string, error)` function that writes the summary to `simulations/<scenarioName>/summary-<timestamp>.md`, where `<timestamp>` is formatted as RFC3339 with colons replaced by hyphens.
-
-The function SHALL:
-- Create the target directory if it does not exist
-- Return the absolute path of the written file on success
-
-#### Scenario: Summary saved to new file
-- **WHEN** `SaveSummary` is called with a non-empty scenario name and content
-- **THEN** a file named `summary-<timestamp>.md` SHALL be created inside `simulations/<scenarioName>/` and the function SHALL return its path with a nil error
-
-#### Scenario: Multiple runs do not overwrite each other
-- **WHEN** `SaveSummary` is called twice in the same second or across different runs
-- **THEN** each call SHALL produce a distinct file (timestamp includes seconds; concurrent calls within the same second are acceptable to produce separate files via unique nanosecond suffix fallback if needed)
-
-#### Scenario: Scenario directory does not exist
-- **WHEN** `SaveSummary` is called for a scenario whose directory does not yet exist
-- **THEN** the function SHALL create the directory and write the file without returning an error

@@ -33,13 +33,33 @@ type CoverIdentity struct {
 	Weaknesses []string `yaml:"weaknesses"` // behaviours/topics that could expose their true nature
 }
 
+// CharacterJudgment holds one character's subjective opinion of another.
+// It is formed from observable information only and colored by the judging
+// character's own psychology. Never persisted to YAML.
+type CharacterJudgment struct {
+	About       string // ID of the character being judged
+	Name        string // name snapshot at judgment time (cover alias if applicable)
+	Impression  string // first-person internal narrative opinion (2–3 sentences)
+	Trust       string // "high" | "medium" | "low" | "none"
+	Interest    string // "high" | "medium" | "low"
+	Threat      string // "high" | "medium" | "low" | "none"
+	FormedTick  int    // tick at which judgment was formed (0 = pre-simulation)
+	UpdatedTick int    // tick at which judgment was last updated (0 = never updated)
+}
+
 // Character represents an autonomous agent in the simulation.
 type Character struct {
 	ID         string `yaml:"id"`
 	Type       string `yaml:"type"` // "" or "character" = regular; "game_director" = Game Director
 	Name       string `yaml:"name"`
 	Age        int    `yaml:"age"`
+	Gender     string `yaml:"gender"`
 	Occupation string `yaml:"occupation"`
+
+	// Appearance describes how this character presents to others on first encounter.
+	// It is visible to other characters when forming judgments but not included in
+	// the character's own system prompt.
+	Appearance string `yaml:"appearance"`
 
 	// Psychological core — static anchors the LLM uses to resolve ambiguity
 	Motivation      string `yaml:"motivation"`
@@ -65,9 +85,10 @@ type Character struct {
 	Goals          []string `yaml:"goals"`
 	EmotionalState string   `yaml:"emotional_state"`
 
-	Memory    []MemoryEntry `yaml:"-"`
-	MaxMemory int           `yaml:"-"`
-	Inbox     []world.Event `yaml:"-"` // private events addressed to this character; flushed after prompt build
+	Memory    []MemoryEntry              `yaml:"-"`
+	MaxMemory int                        `yaml:"-"`
+	Inbox     []world.Event              `yaml:"-"` // private events addressed to this character; flushed after prompt build
+	Judgments map[string]CharacterJudgment `yaml:"-"` // keyed by character ID; subjective opinions of other characters
 }
 
 type charactersFile struct {
@@ -92,6 +113,7 @@ func LoadCharacters(path string) ([]Character, error) {
 			cf.Characters[i].MaxMemory = 20
 		}
 		cf.Characters[i].Inbox = []world.Event{}
+		cf.Characters[i].Judgments = make(map[string]CharacterJudgment)
 	}
 	return cf.Characters, nil
 }

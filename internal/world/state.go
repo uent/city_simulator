@@ -121,6 +121,9 @@ func (s *State) PublicSummary() string {
 	if s.Concept.Premise != "" {
 		sb.WriteString("World Rules:\n")
 		sb.WriteString(fmt.Sprintf("  %s\n", s.Concept.Premise))
+		if s.Concept.Flavor != "" {
+			sb.WriteString(fmt.Sprintf("  Tone: %s\n", s.Concept.Flavor))
+		}
 		for _, rule := range s.Concept.Rules {
 			sb.WriteString(fmt.Sprintf("  - %s\n", rule))
 		}

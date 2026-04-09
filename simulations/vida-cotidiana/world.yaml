@@ -1,0 +1,108 @@
+concept:
+  premise: >
+    Un edificio de apartamentos en el centro de una ciudad mediana. Son las once
+    de la mañana de un domingo de octubre. Ninguno de los residentes tiene planes
+    firmes para el día — lo cual es, en sí mismo, un tipo de problema. No hay
+    crimen que resolver, no hay misión colectiva, no hay catástrofe. Solo cinco
+    personas que comparten paredes delgadas y que, de vez en cuando, se cruzan.
+  flavor: drama relacional sin género, slice-of-life
+  rules:
+    - No hay antagonistas — el conflicto es interno o entre personas que no se odian
+    - Las personas tienen vidas que existieron antes de este domingo y continuarán después; nada se resuelve del todo
+    - El roce es inevitable en espacios compartidos, pero su significado depende de lo que cada uno trae
+    - Los silencios importan tanto como lo que se dice
+    - Nadie está completamente bien ni completamente mal — todos están tratando
+
+weather: nublado, fresco, con olor a lluvia que no termina de caer
+atmosphere: domingo lento, la semana todavía no existe
+
+initial_location: Lobby del Edificio
+
+locations:
+  - name: Lobby del Edificio
+    description: >
+      El hall de entrada del edificio. Buzones de metal en la pared izquierda,
+      un espejo con el marco descascarado frente a la puerta, y un ascensor
+      con el botón del tercer piso que hay que presionar dos veces.
+    details: >
+      Uno de los buzones está abierto — el cierre lleva semanas flojo y nadie
+      llamó al encargado. La luz del techo parpadea en intervalos irregulares,
+      siempre ha sido así. Hay una bolsa del supermercado olvidada junto al
+      ascensor desde ayer a la noche; nadie la reclamó todavía. El espejo
+      refleja más de lo que los residentes quisieran ver cuando entran apresurados.
+
+  - name: Azotea
+    description: >
+      La terraza del último piso. Tendederos de ropa, dos sillas de plástico
+      blancas que nadie recuerda haber subido, y una vista de los techos del
+      barrio que en días de poca nube alcanza hasta las antenas del cerro.
+    details: >
+      Hay ropa tendida desde hace dos días — la lluvia no cayó, pero el frío
+      la dejó húmeda igual. Una de las sillas tiene una raja en el asiento
+      tapada con cinta aisladora marrón. Desde aquí se escucha el ruido de
+      la calle amortiguado, como si el mundo estuviera un poco más lejos.
+      En la esquina opuesta al acceso, alguien dejó una taza de café vacía
+      sobre el borde; el café debe ser de anoche o de antes de ayer.
+
+  - name: Escalera y Pasillos
+    description: >
+      La escalera de cemento que conecta los cuatro pisos, y los pasillos
+      estrechos frente a las puertas de los apartamentos. Los pasos resuenan
+      más de lo que debería ser posible.
+    details: >
+      El pasamanos del segundo piso tiene una mancha de pintura blanca que
+      nadie sabe de cuándo es. Las puertas de los apartamentos están tan
+      cerca unas de otras que se escucha perfectamente si alguien tiene
+      música, una llamada difícil, o simplemente llora. El segundo escalón
+      del tercer piso cruje — todos los residentes lo saben y lo esquivan
+      de noche sin pensar.
+
+  - name: Cafetería Marga
+    description: >
+      Un local pequeño en la esquina del edificio, abierto todos los días
+      desde las siete. Cuatro mesas, una barra de fórmica verde, y una
+      televisión encendida que nadie mira.
+    details: >
+      Los domingos hay menos gente que los días de semana, pero los que
+      vienen se quedan más tiempo. La televisión está en un canal de noticias
+      con el volumen bajo. La cafetera hace un ruido particular entre taza
+      y taza que marca el ritmo del local. La mesa del fondo, junto a la
+      ventana que da al patio interior, es la única desde donde no se ve
+      la calle — la que eligen los que no quieren que los vean desde afuera.
+
+  - name: Parque del Barrio
+    description: >
+      Una plaza con árboles grandes a diez minutos a pie. Los domingos hay
+      una feria de pulgas en el sector norte — ropa usada, libros, objetos
+      sin historia conocida.
+    details: >
+      La feria empieza a las diez y se desarma cerca de las dos. Hay un
+      banco bajo el árbol más grande que siempre está ocupado entre las
+      once y el mediodía; libre después. Los puestos de la feria son
+      irregulares: algunos tienen precios, la mayoría negocia. Entre los
+      puestos hay espacio suficiente para caminar sin que nadie te apure,
+      lo cual es raro en el resto del barrio.
+
+initial_events:
+  - description: >
+      Hay una nota pegada en el tablón del lobby, escrita a mano en letra
+      apretada: "A quien corresponda — el ruido después de las doce es un
+      problema para todos. Por favor. Gracias." No tiene firma. Nadie sabe
+      de cuándo es exactamente.
+    event_type: rumor
+    visibility: public
+
+  - description: >
+      El ascensor lleva tres horas fuera de servicio. Un cartel improvisado
+      pegado con cinta dice "EN MANTENIMIENTO" sin indicar hasta cuándo.
+      El encargado del edificio no está disponible los domingos.
+    event_type: scene_setup
+    visibility: public
+
+  - description: >
+      En la feria del parque apareció esta semana un puesto nuevo: una
+      persona joven vende cosas que parecen de una mudanza reciente —
+      libros con dedicatorias, ropa en buen estado, un reloj de pared.
+      Algunos vecinos del barrio lo reconocieron sin saber de qué.
+    event_type: rumor
+    visibility: public

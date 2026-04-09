@@ -1,3 +1,16 @@
+concept:
+  premise: >
+    Una ciudad donde la corrupción institucional ha operado impune durante veinte años.
+    La muerte de un hombre anónimo en el mercado está a punto de conectar un secreto
+    enterrado con una investigación de corrupción municipal que puede hundir a los que
+    mandan — si alguien lo descubre antes de que los entierren también a ellos.
+  flavor: noir urbano con conspiraciones de largo aliento
+  rules:
+    - La verdad existe pero está sepultada bajo capas de complicidad institucional
+    - Confiar en el sistema es un error — la información viaja por canales laterales o no viaja
+    - "Los secretos tienen costo: quien los guarda los carga, quien los revela los paga"
+    - El poder aquí no se ejerce con violencia visible sino con silencio, favor y omisión
+
 locations:
   - name: Town Square
     description: >

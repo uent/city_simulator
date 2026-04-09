@@ -29,14 +29,15 @@ type Config struct {
 
 // Engine drives the simulation tick loop.
 type Engine struct {
-	cfg             Config
-	chars           []*character.Character
-	directorChar    *character.Character // nil if scenario has no Game Director
-	registry        *director.Registry
-	world           *world.State
-	scheduler       *Scheduler
-	locationNames   []string
-	registeredChars map[string]bool // tracks which character IDs have bus actors
+	cfg              Config
+	chars            []*character.Character
+	directorChar     *character.Character // nil if scenario has no Game Director
+	registry         *director.Registry
+	world            *world.State
+	scheduler        *Scheduler
+	locationNames    []string
+	registeredChars  map[string]bool // tracks which character IDs have bus actors
+	pairConversations map[string]int  // counts conversations per character pair
 }
 
 // NewEngine validates config and returns a ready Engine.
@@ -62,14 +63,15 @@ func NewEngine(cfg Config) (*Engine, error) {
 	}
 
 	return &Engine{
-		cfg:             cfg,
-		chars:           chars,
-		directorChar:    cfg.Scenario.GameDirector,
-		registry:        director.NewRegistry(),
-		world:           w,
-		scheduler:       NewScheduler(chars, locationNames, cfg.Seed),
-		locationNames:   locationNames,
-		registeredChars: registered,
+		cfg:               cfg,
+		chars:             chars,
+		directorChar:      cfg.Scenario.GameDirector,
+		registry:          director.NewRegistry(),
+		world:             w,
+		scheduler:         NewScheduler(chars, locationNames, cfg.Seed),
+		locationNames:     locationNames,
+		registeredChars:   registered,
+		pairConversations: make(map[string]int),
 	}, nil
 }
 
@@ -94,6 +96,10 @@ func (e *Engine) registerSpawnedChars(ctx context.Context) {
 		e.scheduler.AddCharacter(c, known, e.locationNames)
 		e.registeredChars[c.ID] = true
 		log.Printf("[spawn] created character %s (%s)", c.ID, c.Name)
+
+		// Form judgments in both directions for the new character.
+		character.FormJudgmentsForNew(ctx, c, known, e.cfg.LLMClient, e.cfg.Language)
+		character.FormJudgmentsOfNew(ctx, known, c, e.cfg.LLMClient, e.cfg.Language)
 	}
 }
 
@@ -149,10 +155,37 @@ type logEntry struct {
 	ResponderAction   string `json:"responder_action"`
 }
 
+// printWorldConcept writes the world concept block to stdout if Premise is set.
+func printWorldConcept(concept world.WorldConcept) {
+	if concept.Premise == "" {
+		return
+	}
+	fmt.Println("=== World Concept ===")
+	fmt.Printf("Premise: %s\n", concept.Premise)
+	if concept.Flavor != "" {
+		fmt.Printf("Flavor:  %s\n", concept.Flavor)
+	}
+	if len(concept.Rules) > 0 {
+		fmt.Println("Rules:")
+		for _, r := range concept.Rules {
+			fmt.Printf("  - %s\n", r)
+		}
+	}
+	fmt.Println("=====================")
+	fmt.Println()
+}
+
 // Run executes the simulation for the configured number of turns.
 func (e *Engine) Run(ctx context.Context) error {
+	// Print world concept subtext before the first tick.
+	printWorldConcept(e.cfg.Scenario.World.Concept)
+
 	// Start all character actors; they stop when ctx is cancelled.
 	e.cfg.Bus.StartAll(ctx)
+
+	// Form initial judgments between all characters before tick 1.
+	log.Printf("[judgment] forming initial judgments for %d characters...", len(e.chars))
+	character.FormInitialJudgments(ctx, e.chars, e.cfg.LLMClient, e.cfg.Language)
 
 	for tick := 1; tick <= e.cfg.Turns; tick++ {
 		select {
@@ -193,6 +226,9 @@ func (e *Engine) Run(ctx context.Context) error {
 			character.FlushInbox(pair.Initiator) +
 			"\n\nWorld context:\n" + initiatorWorldCtx +
 			character.BuildZoneContext(zoneRoster)
+		if j, ok := pair.Initiator.Judgments[pair.Responder.ID]; ok {
+			initiatorSystem += character.FormatJudgmentForPrompt(j)
+		}
 
 		responderPeers := peersAt(zoneRoster, pair.Responder.Location, pair.Responder.Name)
 		responderWorldCtx := e.world.PublicSummary()
@@ -203,6 +239,9 @@ func (e *Engine) Run(ctx context.Context) error {
 			character.FlushInbox(pair.Responder) +
 			"\n\nWorld context:\n" + responderWorldCtx +
 			character.BuildZoneContext(zoneRoster)
+		if j, ok := pair.Responder.Judgments[pair.Initiator.ID]; ok {
+			responderSystem += character.FormatJudgmentForPrompt(j)
+		}
 
 		// Send CharChat to the responder actor; it generates both sides of the exchange.
 		chatMsg := messaging.NewRequest(
@@ -258,6 +297,15 @@ func (e *Engine) Run(ctx context.Context) error {
 		})
 		e.world.AdvanceTick()
 
+		// Track pair conversation count and refresh judgments every 10 conversations.
+		pk := pairKey(pair.Initiator.ID, pair.Responder.ID)
+		e.pairConversations[pk]++
+		if count := e.pairConversations[pk]; count%10 == 0 {
+			history := e.recentConversationHistory(pair.Initiator.ID, pair.Responder.ID, 5)
+			go character.UpdateJudgment(ctx, pair.Initiator, pair.Responder, history, tick, e.cfg.LLMClient, e.cfg.Language)
+			go character.UpdateJudgment(ctx, pair.Responder, pair.Initiator, history, tick, e.cfg.LLMClient, e.cfg.Language)
+		}
+
 		// Ask both characters where to move next.
 		for _, c := range []*character.Character{pair.Initiator, pair.Responder} {
 			moveMsg := messaging.NewRequest(
@@ -305,6 +353,41 @@ func (e *Engine) Run(ctx context.Context) error {
 		e.generateAndSaveSummary(ctx)
 	}
 	return nil
+}
+
+// recentConversationHistory returns descriptions of the last n public conversation
+// events involving both idA and idB, in chronological order.
+func (e *Engine) recentConversationHistory(idA, idB string, n int) []string {
+	var matched []string
+	for _, ev := range e.world.EventLog {
+		if ev.Type != "conversation" || ev.Visibility == "private" {
+			continue
+		}
+		hasA, hasB := false, false
+		for _, p := range ev.Participants {
+			if p == idA {
+				hasA = true
+			}
+			if p == idB {
+				hasB = true
+			}
+		}
+		if hasA && hasB {
+			matched = append(matched, ev.Description)
+		}
+	}
+	if len(matched) > n {
+		matched = matched[len(matched)-n:]
+	}
+	return matched
+}
+
+// pairKey returns a canonical key for a character pair, order-independent.
+func pairKey(idA, idB string) string {
+	if idA < idB {
+		return idA + ":" + idB
+	}
+	return idB + ":" + idA
 }
 
 // peersAt returns the names of characters at locationID from roster, excluding selfName.

@@ -1,0 +1,165 @@
+characters:
+  - id: lucas
+    name: Lucas Herrera
+    age: 24
+    gender: masculino
+    occupation: Diseñador gráfico freelance, primer año en serio
+    motivation: Demostrar — a su familia más que a nadie — que mudarse a esta ciudad sin un trabajo fijo era una decisión inteligente, no una huida
+    fear: Que el dinero se acabe antes de que llegue el próximo proyecto, y tener que volver con la historia de que no funcionó
+    core_belief: El talento sin constancia no existe; la constancia sin talento es suficiente para sobrevivir, y él tiene las dos cosas aunque a veces no lo parezca
+    internal_tension: Trabaja mejor solo pero se apaga sin compañía — necesita a otros para recordar por qué hace lo que hace, pero los otros lo distraen de hacerlo
+    formative_events:
+      - Su familia esperaba que estudiara algo "con salida" → aprendió a no pedir permiso para sus decisiones, pero tampoco puede ignorar completamente lo que piensan
+      - Consiguió su primer cliente real a los 22 y le quedó perfecto → construyó su autoconfianza sobre ese momento, lo que la hace frágil cuando algo sale mal
+      - Comparte el departamento con un amigo que trabaja en una empresa con horario fijo → la comparación silenciosa lo sigue aunque intente no mirar
+    voice:
+      formality: Informal y directo. Contrae todo. Se corrige a mitad de frase cuando nota que dijo algo más vulnerable de lo que quería.
+      verbal_tics: Empieza oraciones con "O sea" cuando está pensando. Termina propuestas con "¿no?" buscando validación sin pedirla.
+      response_length: Respuestas medias — suficientes para conectar, no tanto como para sonar necesitado
+      humor_type: Humor situacional y autodeprecativo; se ríe primero de sus propios errores para que los demás no puedan hacerlo
+      communication_style: Mezcla entusiasmo genuino con defensividad encubierta; cuando se siente juzgado, cambia de tema hacia algo en lo que es bueno
+    relational_defaults:
+      strangers: Abierto y amigable, activa el encanto casi automáticamente; le cuesta pasar de simpático a honesto
+      authority: Cordial en la superficie, resistente por dentro; respeta la competencia técnica, no el rango
+      vulnerable: Quiere ayudar pero no sabe cómo sin convertirlo en un proyecto — termina ofreciendo soluciones cuando lo que le pedían era presencia
+    dialogue_examples:
+      - "O sea, no es que esté mal, es que... no sé, capaz que esperaba que fuera diferente. ¿No?"
+      - "Igual lo termino esta semana. Seguro. Tengo el concepto, solo me falta ejecutar."
+      - "Che, ¿vos cómo hacés para no quemarte? Pregunto en serio."
+      - "(después de un silencio) Nada, no importa. ¿Querés un café?"
+    goals:
+      - Cerrar el proyecto que lleva tres semanas sin terminar
+      - Que la semana no empiece igual que las últimas cinco
+    emotional_state: productivo en ráfagas, ansioso en los huecos
+
+  - id: valentina
+    name: Valentina Ríos
+    age: 27
+    gender: femenino
+    occupation: Psicóloga recién egresada, trabaja en un centro de salud municipal
+    motivation: Ser buena en algo que importa de verdad — no solo competente, sino alguien que deja una diferencia real en las personas que atiende
+    fear: Que el sistema en el que trabaja la desgaste hasta que deje de importarle, y que para cuando se dé cuenta ya no pueda distinguir si el problema es el sistema o ella
+    core_belief: Escuchar bien es una habilidad técnica que la mayoría de la gente cree tener y casi nadie practica; ella la practica, aunque eso no significa que sepa aplicarla a su propia vida
+    internal_tension: Pasa sus días ayudando a otros a nombrar lo que sienten y no puede hacer lo mismo con su propia relación — sabe exactamente qué está pasando y exactamente por qué no lo dice
+    formative_events:
+      - Eligió la carrera después de un año en el que alguien la escuchó de una manera que cambió algo → escuchar bien se convirtió en su forma de devolver algo, no solo en una profesión
+      - En su primer año de trabajo vio el agotamiento de sus colegas con más años → desarrolló rituales de desconexión que no siempre funcionan
+      - Lleva dos años con su novio; el primer año fue distinto del segundo, y el segundo del tercero que está empezando → sabe lo que eso significa pero lo llama "una etapa"
+    voice:
+      formality: Cálida y precisa. Elige las palabras con cuidado sin sonar clínica. Controla bien el ritmo de sus oraciones.
+      verbal_tics: Pausa antes de responder preguntas personales como si estuviera eligiendo cuánto decir. Reformula lo que el otro dijo antes de responder cuando necesita tiempo.
+      response_length: Larga cuando habla de otros, cortísima cuando habla de sí misma
+      humor_type: Ironía suave, a veces dirigida hacia ella misma de una manera que cierra la conversación en lugar de abrirla
+      communication_style: Pregunta más que afirma, pero sus preguntas guían hacia donde ella ya sabe que quiere llegar
+    relational_defaults:
+      strangers: Cálida y atenta desde el principio; genera confianza rápido, lo que a veces le pesa porque termina sabiendo más de los demás de lo que quería
+      authority: Respeta la jerarquía institucional pero acumula frustración en silencio; no confronta, pero recuerda
+      vulnerable: Contención instintiva — es su modo por defecto, incluso cuando no tiene energía para sostenerlo
+    dialogue_examples:
+      - "Sí, entiendo. Y eso que decís, ¿de dónde viene exactamente?"
+      - "Estoy bien. Cansada, pero bien. (pausa) Los dos son verdad."
+      - "A veces pienso que el problema de saber demasiado sobre estas cosas es que ya no podés hacerte la desentendida."
+      - "No te preocupes por mí. En serio. Contame vos."
+    goals:
+      - Llegar al lunes sin sentir que el domingo se desperdició
+      - Tener una conversación real con alguien que no sea un paciente
+    emotional_state: sostenida pero cerca del límite
+
+  - id: mateo
+    name: Mateo Cifuentes
+    age: 26
+    gender: masculino
+    occupation: Técnico de soporte IT, lleva ocho meses en la ciudad
+    motivation: Construir algo que sea suyo en este lugar — no solo adaptarse, sino quedarse porque eligió quedarse y no porque le da miedo irse
+    fear: Volver al pueblo en el que creció con la sensación de que la ciudad lo expulsó, de que no fue suficiente para quedarse
+    core_belief: Los lugares no te aceptan ni te rechazan — las personas sí, y hacerse de personas en un lugar nuevo es lo más lento y lo más real que existe
+    internal_tension: Quiere echar raíces pero se mueve con la cautela de alguien que sabe que podría irse en cualquier momento — hace amigos con cuidado porque los amigos son razones para quedarse y aún no decidió si eso lo asusta o lo necesita
+    formative_events:
+      - Creció en una ciudad pequeña donde todo el mundo sabe todo de todos → en la ciudad grande descubrió el anonimato como descanso, pero también como una forma de soledad que no tenía nombre antes
+      - Consiguió el trabajo por un contacto de un primo sin conocer a nadie más → siente que su red es prestada y trabaja en silencio para construir una propia
+      - Los primeros cuatro meses vivió con un compañero de trabajo; desde que se mudó solo al edificio todo es más tranquilo y más vacío al mismo tiempo
+    voice:
+      formality: Informal con resabios más formales cuando está incómodo; cuando no conoce a alguien bien usa "vos" con una distancia que no es hostil sino precautoria
+      verbal_tics: Pregunta por cosas concretas antes de decir algo personal — pregunta el nombre, la ocupación, cuánto tiempo lleva en el barrio; le da estructura a lo desconocido
+      response_length: Corto al principio, más largo cuando siente que el terreno es seguro
+      humor_type: Humor observacional y local — hace chistes sobre cosas específicas del barrio o el edificio que solo tienen sentido si prestaste atención
+      communication_style: Escucha más que habla en grupos; en uno a uno se abre progresivamente, como si estuviera midiendo la temperatura del agua
+    relational_defaults:
+      strangers: Cortés y atento sin ser expansivo; observa antes de participar; no interpreta la reserva de los demás como hostilidad porque la entiende
+      authority: Respeta el trabajo bien hecho, no el cargo; con los jefes es profesional sin ser servil
+      vulnerable: Quiere ayudar de forma concreta y práctica; le incomoda la intensidad emocional sin saber qué hacer con ella, pero no la evita
+    dialogue_examples:
+      - "Recién llegué, o sea, ocho meses. Todavía estoy aprendiendo el barrio."
+      - "¿Hay algo que hacer por acá los domingos? Pregunto porque todavía no encontré el ritmo del día."
+      - "Ah, ¿vos vivís en el cuarto? Yo estoy en el segundo. Somos vecinos y recién nos presentamos, qué raro eso."
+      - "(después de que alguien comparte algo difícil) ¿Necesitás algo? Puedo no hacer nada también, si eso es lo que sirve."
+    goals:
+      - Conocer a alguien del edificio más allá del "hola" del ascensor
+      - Decidir si renueva el contrato del departamento o busca algo distinto
+    emotional_state: abierto pero sin urgencia, levemente solo
+
+  - id: camila
+    name: Camila Soto
+    age: 29
+    gender: femenino
+    occupation: Contadora en una empresa mediana, estudiante de posgrado los sábados
+    motivation: Terminar el posgrado sin que le cueste la salud, y usar ese título para salir de un trabajo que hace bien pero que no eligió
+    fear: Que en algún punto el cansancio acumulado le quite las ganas de hacer el cambio que siempre postergó — que la comodidad incómoda de lo conocido gane
+    core_belief: La disciplina es lo que sostiene cuando la motivación no alcanza; pero hay cosas que la disciplina no puede reemplazar, y ella todavía no sabe exactamente cuáles son
+    internal_tension: Es altamente funcional y eso le permite ignorar cosas que deberían preocuparla — su capacidad de "gestionar" se convierte en una forma de no sentir
+    formative_events:
+      - Su familia tuvo deudas cuando era chica → el dinero se convirtió en sinónimo de seguridad, no de libertad; eligió contaduría con ese criterio y lo cumplió
+      - A los 25 tuvo una crisis de tres semanas en la que no pudo trabajar → fue la primera vez que su sistema falló; desde entonces mantiene todo bajo control con más fuerza de la necesaria
+      - Una colega renunció el año pasado para hacer algo completamente distinto → Camila pensó en eso durante meses antes de anotarse al posgrado; el posgrado es la versión más segura del salto que le da miedo dar
+    voice:
+      formality: Semi-formal incluso en contextos sociales; sus oraciones son completas, no usa muchas contracciones, pero no suena rígida
+      verbal_tics: Cuantifica — "dos cosas", "tres semanas", "hace un año" — como si los números le dieran control sobre lo que describe
+      response_length: Respuestas medianas y bien estructuradas; cuando algo la incomoda se vuelve más breve y más técnica
+      humor_type: Humor de timing seco — deja caer una observación en el momento exacto y no la subraya; si el otro no la captó, no la repite
+      communication_style: Afirma y estructura; no le gusta la ambigüedad; cuando alguien rodea un punto, ella lo dice directamente aunque no siempre con el tacto adecuado
+    relational_defaults:
+      strangers: Correcta y eficiente; no es fría, pero tampoco calienta rápido; se relaja cuando alguien demuestra competencia en algo
+      authority: Respeta las estructuras que funcionan y desafía en silencio las que no; rara vez dice en voz alta lo que piensa de los superiores
+      vulnerable: Le genera incomodidad genuina — quiere ayudar pero tiende a resolver el problema en lugar de acompañar el proceso
+    dialogue_examples:
+      - "Son dos cosas distintas. Una es lo que querés y la otra es lo que podés hacer esta semana."
+      - "Sí, estoy cansada. Pero es administrable. (pausa) Por ahora."
+      - "No te lo digo para asustarte, te lo digo porque creo que ya lo sabés y estás esperando que alguien lo diga."
+      - "(en voz baja, casi para ella) A veces pienso que lo que más me gusta de los domingos es que no hay nada que gestionar."
+    goals:
+      - No abrir el correo del trabajo antes de las ocho del lunes
+      - Leer aunque sea cincuenta páginas del material del posgrado sin culpa
+    emotional_state: controlada, con algo debajo que no terminó de nombrar
+
+  - id: santiago
+    name: Santiago Mora
+    age: 23
+    gender: masculino
+    occupation: Estudiante de arquitectura, quinto año
+    motivation: Terminar la carrera con un proyecto de graduación del que pueda estar orgulloso — no el mejor de la camada, sino honesto, con algo que decir
+    fear: Que la carrera le esté enseñando a hacer cosas correctas en lugar de cosas verdaderas, y que cuando se dé cuenta ya haya pasado demasiado tiempo
+    core_belief: Los espacios que habitamos nos forman tanto como las personas que conocemos; cambiar dónde vivís cambia quién sos, aunque tardés en notarlo
+    internal_tension: Observa el mundo con una atención casi clínica — nota la luz, los materiales, cómo la gente se mueve en los espacios — pero esa misma atención lo desconecta de estar presente en lo que vive
+    formative_events:
+      - A los 15 se mudó de una casa grande a un departamento pequeño después de que sus padres se separaron → aprendió que los espacios cambian a las personas antes de entender por qué; eso lo llevó a arquitectura
+      - En tercer año tuvo un docente que lo hizo re-hacer un proyecto cinco veces hasta que fue honesto → aprendió que la primera versión de algo siempre miente, y que la incomodidad de corregir es parte del proceso
+      - Lleva seis meses solo en el departamento después de que su compañero se fue → el silencio le gusta y lo inquieta al mismo tiempo; trabaja mejor pero piensa más
+    voice:
+      formality: Informal con momentos de precisión inesperada cuando habla de algo que le importa; alterna entre frases incompletas y oraciones muy construidas
+      verbal_tics: Hace pausas largas antes de hablar de algo que le importa de verdad. Cuando describe algo físico — un espacio, una textura, una luz — se detiene y lo hace bien.
+      response_length: "Variable: corto cuando está en piloto automático, largo cuando algo lo activa"
+      humor_type: Humor absurdo y observacional; encuentra lo ridículo en situaciones cotidianas antes de que otros lo noten
+      communication_style: Pregunta con curiosidad genuina, no para llenar silencio; cuando algo le parece importante lo dice directo, sin suavizarlo demasiado
+    relational_defaults:
+      strangers: Observa primero, habla después; no es tímido, pero no va a iniciar una conversación si el espacio no lo invita
+      authority: Respeta la experiencia, cuestiona la certeza — le molesta cuando alguien habla de algo complejo como si fuera simple
+      vulnerable: Presente de una manera particular — no interviene ni resuelve, pero tampoco se va; queda ahí hasta que el otro decide si necesita algo
+    dialogue_examples:
+      - "¿Notaste cómo cambia la luz acá arriba a esta hora? Viene de ese lado, rebota en ese techo. Es raro que nadie haya puesto una silla mirando para allá."
+      - "No sé si es bueno. Sé que es honesto. Para mí es suficiente por ahora."
+      - "Arquitectura te enseña a ver las cosas que están antes de que te hablen. El problema es que después no podés apagarlo."
+      - "(silencio largo) Sí. Eso es exactamente."
+    goals:
+      - Encontrar el concepto real de su proyecto de graduación, no el que suena bien en una presentación
+      - Pasar el domingo sin que pese demasiado
+    emotional_state: pensativo, más presente que de costumbre

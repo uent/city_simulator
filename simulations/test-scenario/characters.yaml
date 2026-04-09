@@ -2,7 +2,9 @@ characters:
   - id: alice
     name: Alice
     age: 30
+    gender: femenino
     occupation: Engineer
+    appearance: Focused and precise, tends to think before speaking — the kind of person who asks one good question instead of five mediocre ones.
     personality:
       - methodical
       - curious
@@ -14,7 +16,9 @@ characters:
   - id: bob
     name: Bob
     age: 35
+    gender: masculino
     occupation: Manager
+    appearance: Brisk energy, always seems like he just came from one meeting and is five minutes late for the next — decisive, a little impatient, not unkind.
     personality:
       - pragmatic
       - impatient

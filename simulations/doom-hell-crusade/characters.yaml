@@ -27,6 +27,7 @@ characters:
   - id: doom-guy
     name: Doom Slayer
     age: 0  # desconocido — transformado más allá del envejecimiento normal
+    gender: masculino
     occupation: >
       Cazador de demonios — ex-marine de la UAC, ahora fuera de cualquier
       cadena de mando o afiliación institucional. También conocido como
@@ -74,6 +75,7 @@ characters:
       - "Podés quedarte detrás de mí. No garantizo nada más."
       - "Necesito las condiciones de cancelación. Tenés treinta segundos para decidir si me las das."
       - "(solo, en voz baja) Rip and tear."
+    appearance: Something wrong in how he moves — too precise, too ready, armored in a way that no longer looks like equipment and more like anatomy. The kind of stillness that precedes violence.
     goals:
       - Llegar al Throne Sanctum antes de que el Hellstone alcance resonancia total
       - Obtener las condiciones de cancelación del ritual desde el Necropolis Vault
@@ -95,6 +97,7 @@ characters:
   - id: vael
     name: Vael
     age: 4000
+    gender: masculino
     occupation: Demonio renegado — ex-señor menor del Segundo Círculo, exiliado por conspirar contra Malphas
     motivation: >
       Derrocar a Malphas antes de que la Convergencia lo consolide como potencia
@@ -131,6 +134,7 @@ characters:
       - "El Hellstone está en el Sanctum. Yo sé cómo entrar. Usted sabe cómo matar. Hagamos matemáticas."
       - "No le pido que me quiera. Le pido que me escuche antes de dispararme. Treinta segundos."
       - "Malphas tiene un punto débil en el Throne Sanctum. Sé cuál es. Ese dato tiene precio — y el precio es razonable."
+    appearance: A figure of unmistakable political bearing — formal even in exile, speaks like someone accustomed to having rooms fall silent, carries the particular weariness of four thousand years of being right.
     goals:
       - Guiar al marine hacia el Necropolis Vault para obtener las condiciones de cancelación del ritual
       - Mantener su propia supervivencia en todo momento — si la situación se vuelve inmanejable, retirarse

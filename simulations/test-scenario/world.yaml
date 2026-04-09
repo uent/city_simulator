@@ -1,3 +1,9 @@
+concept:
+  premise: >
+    Una sala de reuniones, dos personas con visiones opuestas y una decisión técnica
+    que no admite más demoras. El producto necesita salir. La pregunta es cómo y a qué costo.
+  flavor: drama de oficina minimalista con tensión de entrega
+
 locations:
   - name: Office
     description: An open-plan office with whiteboards and too many monitors.

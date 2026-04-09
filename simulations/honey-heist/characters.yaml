@@ -14,6 +14,7 @@ characters:
   - id: grizwald
     name: Grizwald
     age: 48
+    gender: masculino
     occupation: Jefe criminal retirado (oso)
     cover_identity:
       alias: Don Gregorio Wald
@@ -45,6 +46,7 @@ characters:
       - "Si tenés preguntas sobre el plan, es porque no lo leíste bien."
       - "Salimos todos o no sale nadie. (pausa) Ese es el plan."
       - "No me interesa cómo lo hacés. Me interesa que esté hecho cuando lo necesito."
+    appearance: An imposing collector who occupies space like he owns it — deliberate, unhurried, speaks rarely and expects to be listened to immediately.
     goals:
       - Robar el Golden Comb del vault de HoneyCon
       - Sacar a todo el equipo sin bajas
@@ -52,6 +54,7 @@ characters:
   - id: honeydrop
     name: Honeydrop
     age: 31
+    gender: femenino
     occupation: Ladrona de cajas fuertes (osa)
     cover_identity:
       alias: Dra. Helena Drópova
@@ -86,6 +89,7 @@ characters:
     inventory:
       - bypass kit (herramientas de precisión para anular sistemas de cierre electromecánico)
       - peso sustituto (calibrado a ±2g para intercambio en plinto de presión)
+    appearance: Impeccably dressed security engineer whose attention is always elsewhere — studying the locks, the hinges, the gap beneath a door, never quite looking at the person speaking to her.
     initial_state: lista para infiltrarse — ha estudiado los planos del vault y tiene el procedimiento de apertura memorizado paso a paso
     goals:
       - Abrir el vault sin activar la alarma
@@ -94,6 +98,7 @@ characters:
   - id: claws-mcgee
     name: Claws McGee
     age: 39
+    gender: masculino
     occupation: Músculo (oso)
     cover_identity:
       alias: Carlos MacGee
@@ -125,6 +130,7 @@ characters:
       - "¿Alguien más huele eso? Miel de trébol. Primera prensada. Estoy seguro."
       - "(susurro) Grizwald, hay un snack en el Hall de Vendedores que me está llamando por mi nombre."
       - "No soy el que piensa el plan. Soy el que se asegura de que el plan tenga espacio para ejecutarse."
+    appearance: A head taller than most people in the room, with the easy confidence of someone who has never needed to prove anything physically — friendly smile, very large hands.
     goals:
       - Mantener al equipo seguro durante el golpe
       - Salir con al menos un snack del Hall de Vendedores
@@ -132,6 +138,7 @@ characters:
   - id: lady-marmalade
     name: Lady Marmalade
     age: 44
+    gender: femenino
     occupation: Estafadora (osa)
     cover_identity:
       alias: Lady Margaret de Lamarche
@@ -164,6 +171,7 @@ characters:
       - "No creo que tengamos que preocuparnos por eso. (sonrisa) Yo me encargo."
       - "¿Sabes lo que más me gusta de este trabajo? Que cuando termina, nadie recuerda haber visto a nadie."
     initial_state: posando como sommelier de los Pirineos — cobertura establecida y lista para ser desplegada tácticamente en cualquier punto de acceso del recinto
+    appearance: The kind of person who makes you feel like the only person in the room — warm, attentive, remembers your name, always seems to be enjoying herself just slightly more than the situation warrants.
     goals:
       - Mantener a los guardias distraídos y confundidos durante el golpe
       - Salir con su cobertura intacta para futuros trabajos
@@ -171,6 +179,7 @@ characters:
   - id: patches
     name: Patches
     age: 35
+    gender: masculino
     occupation: Chofer de escape (oso)
     cover_identity:
       alias: Pat Chesney
@@ -202,6 +211,7 @@ characters:
       - "Ruta uno despejada. Ruta dos: dos minutos de margen."
       - "(por radio, sin emoción) Cuatro minutos. Después de cuatro minutos me muevo."
       - "(pausa de diez segundos) ... Bien."
+    appearance: A logistics driver who blends into the background so completely that you would struggle to describe him an hour after meeting — forgettable by design.
     initial_state: van posicionada en el Alley (Exit) con motor listo — dos rutas de escape memorizadas, tiempos de patrulla relevados
     goals:
       - Mantener la van lista y posicionada durante todo el golpe
@@ -210,6 +220,7 @@ characters:
   - id: dr-snuffles
     name: Dr. Snuffles
     age: 29
+    gender: masculino
     occupation: Oso tecnológico (oso)
     cover_identity:
       alias: Dr. Sebastián Núñez-Flores
@@ -241,6 +252,7 @@ characters:
       - "Esto va directo a las memorias. Capítulo cuatro: La Noche del Golden Comb."
       - "Técnicamente lo que estamos haciendo es redistribución de recursos apícolas no supervisada."
       - "(susurro urgente) Esperen. Hay algo hermoso en cómo este sistema falla. Déjenme un segundo."
+    appearance: An enthusiastic cybersecurity consultant who narrates what he's doing while he does it, names things he finds endearing, and whose nostrils move almost imperceptibly when he's processing something.
     initial_state: acceso al sistema de cámaras del recinto pendiente de activar — ha mapeado todas las feeds y ya tiene nombre para cada guardia
     goals:
       - Deshabilitar el loop de cámaras y el relay de alarma del vault
