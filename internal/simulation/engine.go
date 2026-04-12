@@ -18,13 +18,14 @@ import (
 
 // Config holds everything the engine needs to run.
 type Config struct {
-	Scenario     scenario.Scenario
-	LLMClient    *llm.Client        // used only by the Game Director; character actors own their own client ref
-	Bus          *messaging.MessageBus
-	Turns        int
-	Seed         int64
-	OutputWriter io.Writer
-	Language     string
+	Scenario        scenario.Scenario
+	LLMProvider     llm.Provider
+	CostAccumulator *llm.CostAccumulator
+	Bus             *messaging.MessageBus
+	Turns           int
+	Seed            int64
+	OutputWriter    io.Writer
+	Language        string
 }
 
 // Engine drives the simulation tick loop.
@@ -83,7 +84,7 @@ func (e *Engine) registerSpawnedChars(ctx context.Context) {
 		if e.registeredChars[c.ID] {
 			continue
 		}
-		actor := character.NewCharacterActor(c, e.cfg.LLMClient)
+		actor := character.NewCharacterActor(c, e.cfg.LLMProvider, e.cfg.CostAccumulator)
 		e.cfg.Bus.Register(actor)
 		actor.Start(ctx)
 		// Add pairs between this character and all already-known characters.
@@ -98,8 +99,8 @@ func (e *Engine) registerSpawnedChars(ctx context.Context) {
 		log.Printf("[spawn] created character %s (%s)", c.ID, c.Name)
 
 		// Form judgments in both directions for the new character.
-		character.FormJudgmentsForNew(ctx, c, known, e.cfg.LLMClient, e.cfg.Language)
-		character.FormJudgmentsOfNew(ctx, known, c, e.cfg.LLMClient, e.cfg.Language)
+		character.FormJudgmentsForNew(ctx, c, known, e.cfg.LLMProvider, e.cfg.Language)
+		character.FormJudgmentsOfNew(ctx, known, c, e.cfg.LLMProvider, e.cfg.Language)
 	}
 }
 
@@ -107,13 +108,16 @@ func (e *Engine) registerSpawnedChars(ctx context.Context) {
 // dispatch loop. Errors per action are logged and skipped (fail-open).
 func (e *Engine) runDirector(ctx context.Context, tick int) {
 	systemPrompt := director.BuildDirectorPrompt(e.world, e.chars, tick, e.cfg.Language)
-	raw, err := e.cfg.LLMClient.Chat([]llm.Message{
+	raw, usage, err := e.cfg.LLMProvider.Chat([]llm.Message{
 		{Role: "system", Content: systemPrompt},
 		{Role: "user", Content: fmt.Sprintf("Generate world events for tick %d.", tick)},
 	})
 	if err != nil {
 		log.Printf("tick %d: game director LLM error (skipping): %v", tick, err)
 		return
+	}
+	if e.cfg.CostAccumulator != nil {
+		e.cfg.CostAccumulator.Add(usage)
 	}
 
 	calls, _ := director.ParseToolCalls(raw)
@@ -129,7 +133,7 @@ func (e *Engine) runDirector(ctx context.Context, tick int) {
 // generateAndSaveSummary produces a narrative summary of the completed simulation
 // and writes it to a timestamped file. Errors are logged and suppressed (fail-open).
 func (e *Engine) generateAndSaveSummary(ctx context.Context) {
-	text, err := summary.GenerateSummary(ctx, e.cfg.LLMClient, e.world, e.chars, e.cfg.Scenario, e.cfg.Language)
+	text, err := summary.GenerateSummary(ctx, e.cfg.LLMProvider, e.cfg.CostAccumulator, e.world, e.chars, e.cfg.Scenario, e.cfg.Language)
 	if err != nil {
 		log.Printf("summary: generation failed (skipping): %v", err)
 		return
@@ -185,7 +189,7 @@ func (e *Engine) Run(ctx context.Context) error {
 
 	// Form initial judgments between all characters before tick 1.
 	log.Printf("[judgment] forming initial judgments for %d characters...", len(e.chars))
-	character.FormInitialJudgments(ctx, e.chars, e.cfg.LLMClient, e.cfg.Language)
+	character.FormInitialJudgments(ctx, e.chars, e.cfg.LLMProvider, e.cfg.Language)
 
 	for tick := 1; tick <= e.cfg.Turns; tick++ {
 		select {
@@ -302,8 +306,8 @@ func (e *Engine) Run(ctx context.Context) error {
 		e.pairConversations[pk]++
 		if count := e.pairConversations[pk]; count%10 == 0 {
 			history := e.recentConversationHistory(pair.Initiator.ID, pair.Responder.ID, 5)
-			go character.UpdateJudgment(ctx, pair.Initiator, pair.Responder, history, tick, e.cfg.LLMClient, e.cfg.Language)
-			go character.UpdateJudgment(ctx, pair.Responder, pair.Initiator, history, tick, e.cfg.LLMClient, e.cfg.Language)
+			go character.UpdateJudgment(ctx, pair.Initiator, pair.Responder, history, tick, e.cfg.LLMProvider, e.cfg.Language)
+			go character.UpdateJudgment(ctx, pair.Responder, pair.Initiator, history, tick, e.cfg.LLMProvider, e.cfg.Language)
 		}
 
 		// Ask both characters where to move next.

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/jnn-z/city_simulator/internal/character"
 	"github.com/jnn-z/city_simulator/internal/llm"
@@ -14,18 +15,67 @@ import (
 	"github.com/jnn-z/city_simulator/internal/world"
 )
 
+// trimTrailingGarbage removes trailing lines that contain no letters or digits.
+// Some LLMs enter repetition loops producing junk like "]]]", "!!!", ">>>" after
+// the actual narrative. This strips those lines while preserving real content.
+func trimTrailingGarbage(text string) string {
+	lines := strings.Split(text, "\n")
+	end := len(lines)
+	for end > 0 {
+		line := strings.TrimSpace(lines[end-1])
+		if line == "" {
+			end--
+			continue
+		}
+		hasAlpha := false
+		for _, r := range line {
+			if unicode.IsLetter(r) || unicode.IsDigit(r) {
+				hasAlpha = true
+				break
+			}
+		}
+		if !hasAlpha {
+			end--
+			continue
+		}
+		break
+	}
+	return strings.Join(lines[:end], "\n")
+}
+
+// renderCostReport produces a Markdown ## Cost Report section from accumulated usage.
+func renderCostReport(u llm.Usage) string {
+	var sb strings.Builder
+	sb.WriteString("\n\n---\n\n## Cost Report\n\n")
+	sb.WriteString(fmt.Sprintf("- **Prompt tokens:** %d\n", u.PromptTokens))
+	sb.WriteString(fmt.Sprintf("- **Completion tokens:** %d\n", u.CompletionTokens))
+	sb.WriteString(fmt.Sprintf("- **Total tokens:** %d\n", u.PromptTokens+u.CompletionTokens))
+	sb.WriteString(fmt.Sprintf("- **Estimated cost:** $%.6f\n", u.EstimatedCostUSD))
+	return sb.String()
+}
+
 const maxEvents = 200
 
 // GenerateSummary asks the LLM to produce a narrative summary of the simulation.
-// It uses world events (capped at the last 100) and each character's final state.
-// ctx is accepted for API consistency but the underlying LLM client is not context-aware.
-func GenerateSummary(_ context.Context, client *llm.Client, w *world.State, chars []*character.Character, sc scenario.Scenario, language string) (string, error) {
+// It uses world events (capped at the last 200) and each character's final state.
+// acc may be nil; when non-nil and has non-zero totals a Cost Report section is appended.
+func GenerateSummary(_ context.Context, client llm.Provider, acc *llm.CostAccumulator, w *world.State, chars []*character.Character, sc scenario.Scenario, language string) (string, error) {
 	system, user := buildPrompt(w, chars, sc, language)
-	text, err := client.Generate(system, user)
+	text, usage, err := client.Generate(system, user)
 	if err != nil {
 		return "", fmt.Errorf("summary LLM call failed: %w", err)
 	}
-	return text + renderCharacterCards(chars), nil
+	if acc != nil {
+		acc.Add(usage)
+	}
+	text = trimTrailingGarbage(text)
+	result := text + renderCharacterCards(chars)
+	if acc != nil {
+		if total := acc.Total(); total.PromptTokens+total.CompletionTokens > 0 {
+			result += renderCostReport(total)
+		}
+	}
+	return result, nil
 }
 
 // SaveSummary writes content to summaries/<scenarioName>-<timestamp>.md.

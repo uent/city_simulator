@@ -217,7 +217,7 @@ func FormatJudgmentForPrompt(j CharacterJudgment) string {
 
 // llmCaller is a minimal interface so judgment.go doesn't import the full engine.
 type llmCaller interface {
-	Chat(messages []llm.Message, opts ...llm.Option) (string, error)
+	Chat(messages []llm.Message, opts ...llm.Option) (string, llm.Usage, error)
 }
 
 // FormInitialJudgments fires N×(N-1) parallel LLM calls to populate every
@@ -258,7 +258,7 @@ func FormInitialJudgments(ctx context.Context, chars []*Character, client llmCal
 
 			snapshot := ObservableSnapshot(*job.target)
 			prompt := BuildJudgmentPrompt(*job.judge, snapshot, language)
-			raw, err := client.Chat([]llm.Message{
+			raw, _, err := client.Chat([]llm.Message{
 				{Role: "user", Content: prompt},
 			})
 
@@ -306,7 +306,7 @@ func FormJudgmentsForNew(ctx context.Context, newChar *Character, existing []*Ch
 
 			snapshot := ObservableSnapshot(*target)
 			prompt := BuildJudgmentPrompt(*newChar, snapshot, language)
-			raw, err := client.Chat([]llm.Message{{Role: "user", Content: prompt}})
+			raw, _, err := client.Chat([]llm.Message{{Role: "user", Content: prompt}})
 
 			var judgment CharacterJudgment
 			if err != nil {
@@ -348,7 +348,7 @@ func FormJudgmentsOfNew(ctx context.Context, existing []*Character, newChar *Cha
 			}
 
 			prompt := BuildJudgmentPrompt(*judge, snapshot, language)
-			raw, err := client.Chat([]llm.Message{{Role: "user", Content: prompt}})
+			raw, _, err := client.Chat([]llm.Message{{Role: "user", Content: prompt}})
 
 			var judgment CharacterJudgment
 			if err != nil {
@@ -384,7 +384,7 @@ func UpdateJudgment(ctx context.Context, judge *Character, target *Character, re
 	prior := judge.Judgments[target.ID]
 
 	prompt := BuildUpdatePrompt(*judge, snapshot, prior, recentHistory, language)
-	raw, err := client.Chat([]llm.Message{{Role: "user", Content: prompt}})
+	raw, _, err := client.Chat([]llm.Message{{Role: "user", Content: prompt}})
 	if err != nil {
 		log.Printf("[judgment] update %s→%s: LLM error (keeping prior): %v", judge.ID, target.ID, err)
 		return

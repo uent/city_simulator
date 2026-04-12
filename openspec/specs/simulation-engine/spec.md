@@ -16,7 +16,19 @@ The engine SHALL NOT hold a reference to `conversation.Manager`. All inter-actor
 - **THEN** the function SHALL return a nil engine and a non-nil error stating at least two characters are required
 
 ### Requirement: World concept printed at run start
-At the beginning of `Engine.Run`, before the first tick, the engine SHALL print the world concept block by delegating to the `simulation-premise-display` logic. If `Scenario.World.Concept.Premise` is empty, the engine SHALL skip this step silently.
+At the beginning of `Engine.Run`, before the first tick, the engine SHALL print the world concept block to stdout if `Scenario.World.Concept.Premise` is non-empty.
+
+The block SHALL follow this format:
+```
+=== World Concept ===
+Premise: <premise>
+Flavor:  <flavor>
+Rules:
+  - <rule>
+=====================
+```
+
+The `Flavor:` line SHALL be omitted if `Concept.Flavor` is empty. The `Rules:` section SHALL be omitted if `Concept.Rules` is empty. If `Concept.Premise` is empty, the entire block SHALL be skipped silently.
 
 #### Scenario: Concept block appears before first tick
 - **WHEN** `Engine.Run` is called with a scenario whose `Concept.Premise` is non-empty
@@ -25,6 +37,22 @@ At the beginning of `Engine.Run`, before the first tick, the engine SHALL print 
 #### Scenario: No concept block when premise is absent
 - **WHEN** `Engine.Run` is called with a scenario whose `Concept.Premise` is empty
 - **THEN** no concept block header SHALL appear in stdout and the simulation SHALL proceed normally
+
+#### Scenario: Flavor line present when set
+- **WHEN** `Concept.Flavor` is `"absurdist heist comedy"`
+- **THEN** stdout SHALL contain `Flavor:  absurdist heist comedy` inside the concept block
+
+#### Scenario: Rules section present when set
+- **WHEN** `Concept.Rules` contains two entries
+- **THEN** stdout SHALL contain `Rules:` followed by two `  - <rule>` lines
+
+#### Scenario: Flavor line omitted when empty
+- **WHEN** `Concept.Flavor` is empty string
+- **THEN** stdout SHALL NOT contain a `Flavor:` line in the concept block
+
+#### Scenario: Rules section omitted when empty
+- **WHEN** `Concept.Rules` is nil or empty
+- **THEN** stdout SHALL NOT contain a `Rules:` line in the concept block
 
 ### Requirement: Game Director tick invocation
 The system SHALL invoke the Game Director at the beginning of each tick, before scheduling any character exchange, when `Engine.director` is non-nil.
@@ -106,3 +134,49 @@ The engine SHALL:
 #### Scenario: Run cancelled via context
 - **WHEN** the context is cancelled before the last tick completes
 - **THEN** the engine SHALL return `ctx.Err()` immediately and SHALL NOT attempt to generate a summary
+
+---
+
+## ADDED Requirements
+
+### Requirement: Motor renderiza acción y speech por separado en cada tick
+El motor SHALL mostrar la acción y el speech de los personajes en líneas separadas por turno. El formato SHALL ser:
+
+```
+── Tick N ── InitiatorName [location] → ResponderName [location] ──
+*initiator action*
+InitiatorName: initiator speech
+*responder action*
+ResponderName: responder speech
+```
+
+Las líneas de acción solo se imprimen cuando el campo `Action` es no-vacío. Una acción ausente resulta en que la línea de acción se omite completamente (sin línea en blanco como placeholder).
+
+#### Scenario: Tick con acción y speech para ambos personajes
+- **WHEN** `CharChatReply` tiene `Action` y `Speech` no-vacíos para initiador y respondedor
+- **THEN** la consola SHALL imprimir cuatro líneas: acción del iniciador, speech del iniciador, acción del respondedor, speech del respondedor
+
+#### Scenario: Tick donde un personaje no tiene acción
+- **WHEN** `CharChatReply.InitiatorAction` está vacío pero `ResponderAction` es no-vacío
+- **THEN** la consola SHALL omitir la línea de acción del iniciador y aún imprimir la línea de acción del respondedor
+
+#### Scenario: Tick donde ningún personaje tiene acción
+- **WHEN** ambos campos `Action` están vacíos
+- **THEN** la consola SHALL imprimir solo las dos líneas de speech (una por personaje), sin líneas de acción
+
+---
+
+### Requirement: Entrada del log JSONL incluye campos de acción y speech
+El struct `logEntry` escrito en `OutputWriter` SHALL incluir los siguientes campos adicionales:
+- `initiator_speech string` — texto hablado del iniciador
+- `initiator_action string` — texto de acción del iniciador (string vacío si ninguno)
+- `responder_speech string` — texto hablado del respondedor
+- `responder_action string` — texto de acción del respondedor (string vacío si ninguno)
+
+#### Scenario: Entrada del log con acción presente
+- **WHEN** `CharChatReply.InitiatorAction` es `slams the table`
+- **THEN** la línea JSONL para ese tick SHALL contener `"initiator_action":"slams the table"`
+
+#### Scenario: Entrada del log sin acción
+- **WHEN** `CharChatReply.ResponderAction` está vacío
+- **THEN** la línea JSONL SHALL contener `"responder_action":""` (string vacío, no omitido)

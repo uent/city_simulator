@@ -56,12 +56,14 @@ func main() {
 	_ = godotenv.Load()
 
 	scenarioFlag := flag.String("scenario", envOrString("SIM_SCENARIO", "default"), "Scenario name under simulations/ or absolute path")
-	model := flag.String("model", envOrString("OLLAMA_MODEL", "llama3"), "Ollama model name")
-	ollamaURL := flag.String("ollama-url", envOrString("OLLAMA_URL", "http://localhost:11434"), "Ollama base URL")
-	turns := flag.Int("turns", envOrInt("SIM_TURNS", 10), "Number of simulation ticks")
-	seed := flag.Int64("seed", envOrInt64("SIM_SEED", 0), "Random seed (0 = deterministic round-robin)")
-	output := flag.String("output", envOrString("SIM_OUTPUT", "simulation_output.jsonl"), "JSONL output file path")
-	language := flag.String("language", envOrString("SIM_LANGUAGE", ""), "Language for narrator and character responses (e.g. Spanish, English)")
+	provider     := flag.String("provider", envOrString("LLM_PROVIDER", "ollama"), "LLM provider: ollama or openrouter")
+	model        := flag.String("model", envOrString("OLLAMA_MODEL", "llama3"), "Model name (Ollama model or OpenRouter model ID)")
+	ollamaURL    := flag.String("ollama-url", envOrString("OLLAMA_URL", "http://localhost:11434"), "Ollama base URL")
+	orBaseURL    := flag.String("openrouter-base-url", envOrString("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"), "OpenRouter API base URL")
+	turns        := flag.Int("turns", envOrInt("SIM_TURNS", 10), "Number of simulation ticks")
+	seed         := flag.Int64("seed", envOrInt64("SIM_SEED", 0), "Random seed (0 = deterministic round-robin)")
+	output       := flag.String("output", envOrString("SIM_OUTPUT", "simulation_output.jsonl"), "JSONL output file path")
+	language     := flag.String("language", envOrString("SIM_LANGUAGE", ""), "Language for narrator and character responses (e.g. Spanish, English)")
 
 	for _, arg := range os.Args[1:] {
 		if arg == "--characters" || arg == "-characters" {
@@ -77,7 +79,7 @@ func main() {
 	// Priority: CLI flags > env vars > scenario.yaml overrides > hardcoded defaults.
 	// Both CLI flags and env vars beat scenario.yaml, so both are captured in CLIFlags.
 	cliFlags := scenario.CLIFlags{}
-	if explicitFlags["model"] || os.Getenv("OLLAMA_MODEL") != "" {
+	if explicitFlags["model"] || os.Getenv("OLLAMA_MODEL") != "" || os.Getenv("OPENROUTER_MODEL") != "" {
 		cliFlags.Model = model
 	}
 	if explicitFlags["turns"] || os.Getenv("SIM_TURNS") != "" {
@@ -108,12 +110,40 @@ func main() {
 	}
 	simCfg := scenario.MergeConfig(sc.Overrides, cliFlags, defaults)
 
-	// Ping Ollama.
-	client := llm.NewClient(*ollamaURL, simCfg.Model)
-	if err := client.Ping(); err != nil {
-		log.Fatalf("cannot connect to Ollama: %v\nMake sure Ollama is running at %s", err, *ollamaURL)
+	// Determine effective model: OPENROUTER_MODEL takes precedence when provider=openrouter
+	// and no explicit --model flag was passed.
+	effectiveModel := simCfg.Model
+	if *provider == "openrouter" && !explicitFlags["model"] && os.Getenv("OPENROUTER_MODEL") != "" {
+		effectiveModel = os.Getenv("OPENROUTER_MODEL")
 	}
-	fmt.Printf("Connected to Ollama at %s (model: %s)\n\n", *ollamaURL, simCfg.Model)
+
+	// Build provider config and create the LLM provider.
+	providerCfg := llm.ProviderConfig{
+		ProviderName:      *provider,
+		OllamaURL:         *ollamaURL,
+		OllamaModel:       effectiveModel,
+		OpenRouterAPIKey:  os.Getenv("OPENROUTER_API_KEY"),
+		OpenRouterModel:   effectiveModel,
+		OpenRouterBaseURL: *orBaseURL,
+	}
+
+	llmProvider, err := llm.NewProvider(providerCfg)
+	if err != nil {
+		log.Fatalf("LLM provider init: %v", err)
+	}
+
+	if err := llmProvider.Ping(); err != nil {
+		switch *provider {
+		case "openrouter":
+			log.Fatalf("cannot connect to OpenRouter: %v\nCheck your OPENROUTER_API_KEY and network connection.", err)
+		default:
+			log.Fatalf("cannot connect to Ollama: %v\nMake sure Ollama is running at %s", err, *ollamaURL)
+		}
+	}
+	fmt.Printf("Connected to %s (model: %s)\n\n", *provider, effectiveModel)
+
+	// Cost accumulator — tracks token usage across all LLM calls.
+	acc := &llm.CostAccumulator{}
 
 	// Open output file.
 	outFile, err := os.Create(simCfg.Output)
@@ -125,18 +155,19 @@ func main() {
 	// Wire message bus and register one actor per character.
 	bus := messaging.NewMessageBus()
 	for i := range sc.Characters {
-		actor := character.NewCharacterActor(&sc.Characters[i], client)
+		actor := character.NewCharacterActor(&sc.Characters[i], llmProvider, acc)
 		bus.Register(actor)
 	}
 
 	engine, err := simulation.NewEngine(simulation.Config{
-		Scenario:     sc,
-		LLMClient:    client,
-		Bus:          bus,
-		Turns:        simCfg.Turns,
-		Seed:         simCfg.Seed,
-		OutputWriter: outFile,
-		Language:     simCfg.Language,
+		Scenario:        sc,
+		LLMProvider:     llmProvider,
+		CostAccumulator: acc,
+		Bus:             bus,
+		Turns:           simCfg.Turns,
+		Seed:            simCfg.Seed,
+		OutputWriter:    outFile,
+		Language:        simCfg.Language,
 	})
 	if err != nil {
 		log.Fatalf("create engine: %v", err)

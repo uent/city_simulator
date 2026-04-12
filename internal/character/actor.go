@@ -22,7 +22,8 @@ type Turn struct {
 // It satisfies messaging.Actor.
 type CharacterActor struct {
 	char       *Character
-	llmClient  *llm.Client
+	llmClient  llm.Provider
+	acc        *llm.CostAccumulator
 	inbox      chan messaging.Message
 	history    map[string][]Turn // keyed by peer character ID
 	maxHistory int
@@ -30,11 +31,12 @@ type CharacterActor struct {
 	cancel     context.CancelFunc
 }
 
-// NewCharacterActor creates a CharacterActor backed by the given character and LLM client.
-func NewCharacterActor(c *Character, llmClient *llm.Client) *CharacterActor {
+// NewCharacterActor creates a CharacterActor backed by the given character and LLM provider.
+func NewCharacterActor(c *Character, llmClient llm.Provider, acc *llm.CostAccumulator) *CharacterActor {
 	return &CharacterActor{
 		char:       c,
 		llmClient:  llmClient,
+		acc:        acc,
 		inbox:      make(chan messaging.Message, 4),
 		history:    make(map[string][]Turn),
 		maxHistory: 20,
@@ -112,12 +114,15 @@ func (a *CharacterActor) handleCharChat(msg messaging.Message) {
 		Content: fmt.Sprintf("You encounter %s. What do you say?", a.char.Name),
 	})
 
-	initiatorRaw, err := a.llmClient.Chat(initiatorMsgs)
+	initiatorRaw, usage, err := a.llmClient.Chat(initiatorMsgs)
 	if err != nil {
 		messaging.Reply(msg, messaging.CharChatReply{
 			Err: fmt.Errorf("LLM call for initiator %s: %w", payload.InitiatorName, err),
 		})
 		return
+	}
+	if a.acc != nil {
+		a.acc.Add(usage)
 	}
 	initiatorExpr := ParseExpression(initiatorRaw)
 
@@ -128,12 +133,15 @@ func (a *CharacterActor) handleCharChat(msg messaging.Message) {
 		{Role: "user", Content: FormatExpression(initiatorExpr)},
 	}
 
-	responderRaw, err := a.llmClient.Chat(responderMsgs)
+	responderRaw, usage, err := a.llmClient.Chat(responderMsgs)
 	if err != nil {
 		messaging.Reply(msg, messaging.CharChatReply{
 			Err: fmt.Errorf("LLM call for responder %s: %w", a.char.Name, err),
 		})
 		return
+	}
+	if a.acc != nil {
+		a.acc.Add(usage)
 	}
 	responderExpr := ParseExpression(responderRaw)
 
@@ -164,11 +172,14 @@ func (a *CharacterActor) handleMoveDecision(msg messaging.Message) {
 		{Role: "user", Content: "Where do you go next?"},
 	}
 
-	raw, err := a.llmClient.Chat(msgs)
+	raw, usage, err := a.llmClient.Chat(msgs)
 	if err != nil {
 		log.Printf("actor %s: movement LLM error: %v", a.char.ID, err)
 		messaging.Reply(msg, messaging.MoveDecisionReply{Location: "stay"})
 		return
+	}
+	if a.acc != nil {
+		a.acc.Add(usage)
 	}
 
 	decision := strings.TrimSpace(raw)

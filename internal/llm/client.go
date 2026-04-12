@@ -68,7 +68,8 @@ func (c *Client) Ping() error {
 
 // Generate sends a system prompt and a user prompt to Ollama and returns the
 // assistant's reply. It is a convenience wrapper around Chat.
-func (c *Client) Generate(systemPrompt, userPrompt string, opts ...Option) (string, error) {
+// Always returns zero Usage because Ollama does not expose token counts.
+func (c *Client) Generate(systemPrompt, userPrompt string, opts ...Option) (string, Usage, error) {
 	messages := []Message{
 		{Role: "system", Content: systemPrompt},
 		{Role: "user", Content: userPrompt},
@@ -77,7 +78,8 @@ func (c *Client) Generate(systemPrompt, userPrompt string, opts ...Option) (stri
 }
 
 // Chat sends messages to /api/chat and returns the assistant's reply text.
-func (c *Client) Chat(messages []Message, opts ...Option) (string, error) {
+// Always returns zero Usage because Ollama does not expose token counts.
+func (c *Client) Chat(messages []Message, opts ...Option) (string, Usage, error) {
 	req := &ChatRequest{
 		Model:    c.model,
 		Messages: messages,
@@ -89,23 +91,23 @@ func (c *Client) Chat(messages []Message, opts ...Option) (string, error) {
 
 	body, err := json.Marshal(req)
 	if err != nil {
-		return "", fmt.Errorf("marshal chat request: %w", err)
+		return "", Usage{}, fmt.Errorf("marshal chat request: %w", err)
 	}
 
 	resp, err := c.httpClient.Post(c.baseURL+"/api/chat", "application/json", bytes.NewReader(body))
 	if err != nil {
-		return "", fmt.Errorf("chat request to Ollama: %w", err)
+		return "", Usage{}, fmt.Errorf("chat request to Ollama: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		raw, _ := io.ReadAll(resp.Body)
-		return "", fmt.Errorf("Ollama /api/chat returned status %d: %s", resp.StatusCode, string(raw))
+		return "", Usage{}, fmt.Errorf("Ollama /api/chat returned status %d: %s", resp.StatusCode, string(raw))
 	}
 
 	var chatResp ChatResponse
 	if err := json.NewDecoder(resp.Body).Decode(&chatResp); err != nil {
-		return "", fmt.Errorf("decode chat response: %w", err)
+		return "", Usage{}, fmt.Errorf("decode chat response: %w", err)
 	}
-	return chatResp.Message.Content, nil
+	return chatResp.Message.Content, Usage{}, nil
 }
